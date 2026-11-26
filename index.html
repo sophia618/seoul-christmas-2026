@@ -1,0 +1,4398 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17342b">
+  <meta name="description" content="热汤、灯河与一场未完待续的音乐剧：2026 首尔圣诞夜行地图">
+  <link rel="preconnect" href="https://server.arcgisonline.com" crossorigin>
+  <link rel="preconnect" href="https://tile.openstreetmap.de" crossorigin>
+  <link rel="preconnect" href="https://a.tile.openstreetmap.fr" crossorigin>
+  <title>首尔，圣诞夜行 · 2026</title>
+  <style>
+    :root {
+      --ink: #17342b;
+      --ink-soft: #35594f;
+      --paper: #f6f1e7;
+      --paper-deep: #e9e0cf;
+      --panel: #fffdf7;
+      --line: #cfc5b2;
+      --river: #a9d4dc;
+      --river-deep: #77b3c1;
+      --green: #2f735b;
+      --green-pale: #dce9dc;
+      --orange: #d66043;
+      --orange-pale: #f5ddcf;
+      --blue: #376d8c;
+      --blue-pale: #dce8ee;
+      --gold: #b47b30;
+      --gold-pale: #f1e3c8;
+      --plum: #7c5368;
+      --plum-pale: #ebdfe5;
+      --shadow: 0 18px 48px rgba(39, 48, 39, .16);
+      --radius: 18px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --section-nav-height: 46px;
+      --mobile-topbar-height: 70px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255,255,255,.76), transparent 28rem),
+        var(--paper);
+      color: var(--ink);
+      font-family: "Aptos", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+    a { color: inherit; }
+    button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+      outline: 3px solid rgba(214, 96, 67, .48);
+      outline-offset: 3px;
+    }
+
+    .brand-mark svg,
+    .section-nav svg,
+    .map-title-chip svg,
+    .map-marker svg,
+    .map-control svg,
+    .detail-close svg,
+    .action-link svg,
+    .empty-detail svg,
+    .route-note svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .app-shell {
+      height: 100svh;
+      min-height: 100svh;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      overflow: hidden;
+    }
+
+    .topbar {
+      min-height: 78px;
+      padding: 14px clamp(16px, 2.4vw, 34px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid rgba(23, 52, 43, .16);
+      background: rgba(246, 241, 231, .9);
+      backdrop-filter: blur(14px);
+      position: relative;
+      z-index: 50;
+    }
+
+    .brand {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--paper);
+      background: var(--ink);
+      flex: 0 0 auto;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+    }
+
+    .brand-mark svg { width: 22px; height: 22px; }
+    .brand-copy { flex: 1; min-width: 0; }
+
+    .eyebrow {
+      margin: 0 0 2px;
+      font-size: 11px;
+      line-height: 1.35;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      font-weight: 750;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+      font-size: clamp(24px, 2.8vw, 38px);
+      line-height: 1.04;
+      font-weight: 600;
+      letter-spacing: -.02em;
+    }
+
+    .header-intro {
+      max-width: none;
+      margin: 7px 0 0;
+      color: var(--ink-soft);
+      font-size: 12px;
+      line-height: 1.55;
+      font-weight: 520;
+    }
+
+    .header-intro strong { color: var(--ink); }
+
+    .trip-summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .summary-block {
+      padding: 7px 12px;
+      border-left: 1px solid var(--line);
+      min-width: 92px;
+    }
+
+    .summary-block:first-child { border-left: 0; }
+
+    .summary-label {
+      display: block;
+      font-size: 10px;
+      line-height: 1.2;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      font-weight: 760;
+      margin-bottom: 3px;
+    }
+
+    .summary-value {
+      display: block;
+      font-size: 14px;
+      line-height: 1.25;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .section-nav {
+      min-height: var(--section-nav-height);
+      padding: 6px clamp(16px, 2.4vw, 34px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(23, 52, 43, .14);
+      background:
+        linear-gradient(90deg, rgba(220, 233, 220, .42), rgba(245, 221, 207, .28)),
+        rgba(233, 224, 207, .72);
+      position: relative;
+      z-index: 48;
+    }
+
+    .section-nav-list {
+      width: min(100%, 760px);
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .section-nav-link {
+      min-width: 0;
+      min-height: 34px;
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px solid rgba(23, 52, 43, .14);
+      border-radius: 8px;
+      color: var(--ink-soft);
+      background: rgba(255, 253, 247, .72);
+      box-shadow: 0 2px 9px rgba(23, 52, 43, .045);
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 780;
+      text-decoration: none;
+      white-space: nowrap;
+      transition:
+        color .2s ease,
+        background .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
+    }
+
+    .section-nav-link svg { width: 15px; height: 15px; flex: 0 0 auto; }
+
+    .section-nav-link:hover {
+      color: var(--ink);
+      background: rgba(255, 253, 247, .96);
+      border-color: rgba(23, 52, 43, .28);
+      box-shadow: 0 8px 18px rgba(23, 52, 43, .13);
+      transform: translateY(-2px);
+    }
+
+    .section-nav-link[aria-current] {
+      color: var(--paper);
+      background: var(--ink);
+      border-color: var(--ink);
+      box-shadow: 0 6px 15px rgba(23, 52, 43, .2);
+    }
+
+    .section-target { scroll-margin-top: 12px; }
+
+    .workspace {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: clamp(370px, 31vw, 460px) minmax(0, 1fr);
+    }
+
+    .sidebar {
+      min-height: 0;
+      display: block;
+      background: rgba(255, 253, 247, .65);
+      border-right: 1px solid rgba(23, 52, 43, .15);
+      position: relative;
+      z-index: 30;
+    }
+
+    .sidebar-head {
+      padding: 18px 18px 12px;
+    }
+
+    .section-kicker {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 11px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-family: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+      font-size: 22px;
+      line-height: 1.1;
+      font-weight: 600;
+    }
+
+    .countdown {
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: .06em;
+      color: var(--orange);
+      white-space: nowrap;
+      padding: 8px 9px;
+      border: 1px solid rgba(214, 96, 67, .26);
+      border-radius: 999px;
+      background: var(--orange-pale);
+    }
+
+    .day-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+      padding: 4px;
+      border: 1px solid rgba(23, 52, 43, .15);
+      border-radius: 999px;
+      background: rgba(233, 224, 207, .62);
+    }
+
+    .day-tab {
+      min-height: 37px;
+      padding: 6px 5px;
+      border: 0;
+      border-radius: 999px;
+      color: var(--ink-soft);
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1.1;
+      font-weight: 760;
+      transition: background .18s ease, color .18s ease, transform .18s ease;
+    }
+
+    .day-tab:hover {
+      background: rgba(255,255,255,.55);
+      box-shadow: 0 6px 14px rgba(23, 52, 43, .1);
+      transform: translateY(-1px);
+    }
+    .day-tab[aria-pressed="true"] {
+      color: var(--paper);
+      background: var(--ink);
+      box-shadow: 0 5px 15px rgba(23, 52, 43, .2);
+    }
+
+    .day-tab small {
+      display: block;
+      margin-top: 2px;
+      font-size: 9px;
+      font-weight: 650;
+      opacity: .75;
+    }
+
+    .timeline-scroll {
+      height: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(23, 52, 43, .25) transparent;
+      padding: 2px 14px 28px;
+    }
+
+    .timeline-scroll > .sidebar-head {
+      padding: 18px 4px 12px;
+    }
+
+    .day-group { padding: 14px 4px 7px; }
+    .day-group[hidden] { display: none; }
+
+    .day-group-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+
+    .day-date {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .day-number {
+      font-family: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+      font-size: 29px;
+      line-height: 1;
+      font-weight: 650;
+    }
+
+    .day-week {
+      font-size: 12px;
+      font-weight: 760;
+      color: var(--ink-soft);
+    }
+
+    .day-theme {
+      max-width: 45%;
+      text-align: right;
+      font-size: 11px;
+      line-height: 1.3;
+      color: var(--ink-soft);
+      font-weight: 650;
+    }
+
+    .timeline {
+      list-style: none;
+      margin: 0;
+      padding: 0 0 0 6px;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 0 0 10px 28px;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 22px;
+      bottom: -2px;
+      width: 1px;
+      background: var(--line);
+    }
+
+    .timeline-item:last-child::before { display: none; }
+
+    .timeline-dot {
+      position: absolute;
+      left: 2px;
+      top: 16px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--panel);
+      border: 2px solid var(--ink);
+      box-shadow: 0 0 0 3px var(--paper);
+    }
+
+    .timeline-dot.rest {
+      border-style: dashed;
+      border-color: var(--ink-soft);
+      background: transparent;
+    }
+
+    .timeline-button {
+      width: 100%;
+      min-height: 58px;
+      padding: 12px 12px 11px;
+      text-align: left;
+      color: var(--ink);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+
+    .timeline-button:hover {
+      background: rgba(255,255,255,.7);
+      border-color: rgba(23, 52, 43, .12);
+      box-shadow: 0 10px 22px rgba(23, 52, 43, .08);
+      transform: translateY(-2px) rotateX(1deg);
+    }
+
+    .timeline-button.is-selected {
+      background: var(--panel);
+      border-color: rgba(23, 52, 43, .17);
+      box-shadow: 0 8px 22px rgba(42, 50, 39, .08);
+    }
+
+    .timeline-button.static { cursor: default; }
+    .timeline-button.static:hover { transform: none; background: transparent; border-color: transparent; }
+
+    .time-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .time {
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: .05em;
+      color: var(--orange);
+    }
+
+    .mini-tag {
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 780;
+      letter-spacing: .05em;
+      color: var(--ink-soft);
+      background: var(--paper-deep);
+      white-space: nowrap;
+    }
+
+    .mini-tag.wait {
+      color: var(--plum);
+      background: var(--plum-pale);
+    }
+
+    .timeline-name {
+      display: block;
+      font-size: 14px;
+      line-height: 1.35;
+      font-weight: 760;
+    }
+
+    .timeline-note {
+      display: block;
+      margin-top: 3px;
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--ink-soft);
+    }
+
+    .map-shell {
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      background: #e7eadf;
+    }
+
+    .map-toolbar {
+      position: absolute;
+      z-index: 20;
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      pointer-events: none;
+    }
+
+    .map-toolbar > * { pointer-events: auto; }
+
+    .map-title-chip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 13px;
+      border: 1px solid rgba(23, 52, 43, .14);
+      border-radius: 11px;
+      background: rgba(255,253,247,.9);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 9px 26px rgba(42, 50, 39, .09);
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 760;
+    }
+
+    .map-title-chip svg {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 7px;
+      max-width: 440px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(23, 52, 43, .12);
+      background: rgba(255,253,247,.88);
+      backdrop-filter: blur(8px);
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 730;
+      color: var(--ink-soft);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .legend-dot.shop { background: var(--blue); }
+    .legend-dot.show { background: var(--plum); }
+    .legend-dot.event { background: var(--orange); }
+
+    .map-viewport {
+      width: 100%;
+      height: 100%;
+      min-height: 540px;
+      overflow: hidden;
+      touch-action: none;
+      cursor: grab;
+      position: relative;
+    }
+
+    .map-viewport.is-dragging { cursor: grabbing; }
+
+    .map-stage {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      will-change: transform;
+    }
+
+    .tile-layer {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #e5e8dd;
+    }
+
+    .tile-layer img {
+      position: absolute;
+      width: 256px;
+      height: 256px;
+      display: block;
+      object-fit: cover;
+      opacity: 0;
+      filter: saturate(.55) contrast(.94) brightness(1.06);
+      transition: opacity .2s ease;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .tile-layer img.is-loaded { opacity: .93; }
+    .tile-layer img.is-error { opacity: 0; }
+
+    .seoul-map {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: block;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    #schematicBase {
+      transition: opacity .25s ease;
+    }
+
+    .map-shell.tiles-active #schematicBase,
+    .map-shell.tiles-active #routeLayer {
+      opacity: 0;
+    }
+
+    .route-overlay {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+
+    .map-shell.tiles-active .route-overlay {
+      opacity: 1;
+    }
+
+    .map-district {
+      stroke: rgba(23, 52, 43, .13);
+      stroke-width: 1.2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .road {
+      fill: none;
+      stroke: rgba(255, 253, 247, .9);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .road.major {
+      stroke: #fffdf7;
+      stroke-width: 7;
+    }
+
+    .road.edge {
+      stroke: rgba(255,255,255,.52);
+      stroke-width: 2;
+    }
+
+    .block-line {
+      fill: none;
+      stroke: rgba(23, 52, 43, .08);
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .park { fill: #bed3b8; stroke: rgba(47,115,91,.18); stroke-width: 1; }
+    .river { fill: var(--river); }
+    .river-detail { fill: none; stroke: rgba(255,255,255,.65); stroke-width: 2; }
+
+    .area-label {
+      fill: rgba(23, 52, 43, .55);
+      font-size: 14px;
+      font-weight: 750;
+      letter-spacing: .08em;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    .area-label.small { font-size: 11px; letter-spacing: .05em; fill: rgba(23,52,43,.45); }
+
+    .route-line {
+      fill: none;
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 8 8;
+      opacity: .9;
+      vector-effect: non-scaling-stroke;
+      transition: opacity .2s ease;
+    }
+
+    .route-line.day-1 { stroke: var(--orange); }
+    .route-line.day-2 { stroke: var(--green); }
+    .route-line.day-3 { stroke: var(--blue); }
+    .route-line.is-muted { opacity: .08; }
+
+    .marker-stem {
+      stroke: rgba(23, 52, 43, .48);
+      stroke-width: 1.2;
+      stroke-dasharray: 2 3;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .markers-layer {
+      position: absolute;
+      z-index: 3;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .map-marker {
+      position: absolute;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 7px 16px rgba(23, 52, 43, .25), 0 0 0 3px rgba(255,253,247,.78);
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: opacity .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+
+    .map-marker:hover,
+    .map-marker[aria-pressed="true"] {
+      box-shadow: 0 9px 22px rgba(23, 52, 43, .36), 0 0 0 4px rgba(255,253,247,.95), 0 0 0 7px rgba(214,96,67,.22);
+      transform: translate(-50%, -50%) translateY(-3px) scale(1.09);
+      z-index: 8;
+    }
+
+    .map-marker.is-muted { opacity: .17; pointer-events: none; }
+
+    .map-marker .marker-glyph {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+    }
+
+    .map-marker svg { width: 17px; height: 17px; stroke-width: 2.2; }
+    .map-marker.shop { background: var(--blue); }
+    .map-marker.show { background: var(--plum); }
+    .map-marker.event { background: var(--orange); }
+    .map-marker.hotel { background: var(--ink); }
+    .map-marker.choice-pending {
+      color: var(--ink);
+      background: rgba(255,253,247,.96);
+      border: 2px dashed var(--ink);
+      box-shadow: 0 6px 16px rgba(23, 52, 43, .18), 0 0 0 3px rgba(255,253,247,.72);
+    }
+
+    .marker-index {
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 7px);
+      transform: translateX(-50%);
+      padding: 3px 5px;
+      border-radius: 5px;
+      color: var(--ink);
+      background: rgba(255,253,247,.92);
+      font-size: 8.5px;
+      line-height: 1;
+      font-weight: 850;
+      white-space: nowrap;
+      box-shadow: 0 3px 8px rgba(23,52,43,.11);
+      max-width: 104px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity .16s ease, transform .16s ease;
+    }
+
+    .markers-layer.labels-hidden .marker-index {
+      opacity: 0;
+      transform: translateX(-50%) scale(.82);
+      pointer-events: none;
+    }
+
+    .map-controls {
+      position: absolute;
+      z-index: 22;
+      right: 18px;
+      bottom: 18px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .map-control {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(23, 52, 43, .16);
+      border-radius: 10px;
+      color: var(--ink);
+      background: rgba(255,253,247,.94);
+      backdrop-filter: blur(8px);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(23,52,43,.11);
+    }
+
+    .map-control:hover { background: #fff; }
+    .map-control svg { width: 18px; height: 18px; }
+
+    .map-control:disabled {
+      opacity: .42;
+      cursor: not-allowed;
+      background: rgba(255,253,247,.72);
+    }
+
+    .map-hint {
+      position: absolute;
+      z-index: 21;
+      left: 18px;
+      bottom: 18px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: var(--ink-soft);
+      background: rgba(255,253,247,.82);
+      backdrop-filter: blur(8px);
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 680;
+      pointer-events: none;
+    }
+
+    .map-hint strong {
+      color: var(--ink);
+      font-weight: 850;
+    }
+
+    .map-attribution {
+      position: absolute;
+      z-index: 21;
+      right: 72px;
+      bottom: 20px;
+      padding: 5px 7px;
+      border-radius: 6px;
+      color: var(--ink-soft);
+      background: rgba(255,253,247,.8);
+      backdrop-filter: blur(8px);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 650;
+      text-decoration: none;
+    }
+
+    .map-attribution:hover { text-decoration: underline; }
+
+    .map-shell:not(.tiles-active) .map-attribution {
+      opacity: .45;
+    }
+
+    .detail-panel {
+      position: absolute;
+      z-index: 40;
+      top: 82px;
+      right: 18px;
+      width: min(350px, calc(100% - 36px));
+      max-height: calc(100% - 118px);
+      overflow-y: auto;
+      border: 1px solid rgba(23, 52, 43, .18);
+      border-radius: var(--radius);
+      background: rgba(255,253,247,.97);
+      box-shadow: var(--shadow);
+      transform: translateX(calc(100% + 28px));
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .34s cubic-bezier(.2,.75,.2,1), opacity .22s ease;
+    }
+
+    .detail-panel.is-open {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .detail-head {
+      padding: 22px 52px 16px 20px;
+      position: relative;
+      border-bottom: 1px solid rgba(23, 52, 43, .12);
+    }
+
+    .detail-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(23,52,43,.14);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .detail-close svg { width: 17px; height: 17px; }
+
+    .detail-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 10px;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 820;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--orange);
+    }
+
+    .detail-title {
+      margin: 0;
+      font-family: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+      font-size: 30px;
+      line-height: 1.05;
+      font-weight: 650;
+      letter-spacing: -.02em;
+    }
+
+    .detail-subtitle {
+      margin: 8px 0 0;
+      color: var(--ink-soft);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .detail-visual {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      margin: 0;
+      overflow: hidden;
+      background: var(--paper-deep);
+      border-bottom: 1px solid rgba(23, 52, 43, .1);
+    }
+
+    .detail-visual img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .detail-visual::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 34%;
+      background: linear-gradient(transparent, rgba(5, 17, 20, .34));
+      pointer-events: none;
+    }
+
+    .detail-body { padding: 18px 20px 20px; }
+    .detail-description {
+      margin: 0 0 16px;
+      font-size: 14px;
+      line-height: 1.68;
+      color: var(--ink-soft);
+    }
+
+    .detail-meta {
+      display: grid;
+      gap: 9px;
+      margin: 0 0 17px;
+      padding: 13px 0;
+      border-top: 1px solid rgba(23, 52, 43, .1);
+      border-bottom: 1px solid rgba(23, 52, 43, .1);
+    }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .meta-label {
+      color: var(--ink-soft);
+      font-weight: 680;
+    }
+
+    .meta-value { font-weight: 720; }
+
+    .detail-tip {
+      margin: 0 0 17px;
+      padding: 11px 12px;
+      border-left: 3px solid var(--gold);
+      border-radius: 0 9px 9px 0;
+      background: var(--gold-pale);
+      font-size: 12px;
+      line-height: 1.55;
+      color: #6a4c24;
+    }
+
+    .detail-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .action-link {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 13px;
+      border: 1px solid var(--ink);
+      border-radius: 9px;
+      color: var(--paper);
+      background: var(--ink);
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 760;
+      text-decoration: none;
+    }
+
+    .action-link.secondary {
+      color: var(--ink);
+      background: transparent;
+      border-color: rgba(23, 52, 43, .24);
+    }
+
+    .action-link svg { width: 15px; height: 15px; }
+
+    .trip-footer {
+      display: none;
+    }
+
+    .empty-detail {
+      padding: 50px 24px;
+      text-align: center;
+      color: var(--ink-soft);
+    }
+
+    .empty-detail svg { width: 36px; height: 36px; margin-bottom: 12px; }
+    .empty-detail p { margin: 0; font-size: 13px; line-height: 1.6; }
+
+    .rest-card {
+      margin: 6px 0 4px 28px;
+      padding: 12px 13px;
+      border: 1px dashed rgba(23, 52, 43, .28);
+      border-radius: 11px;
+      color: var(--ink-soft);
+      background: rgba(255,255,255,.38);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .rest-card strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .transport-strip {
+      margin: 0 0 12px 28px;
+      padding: 10px 11px;
+      border-radius: 10px;
+      background: var(--blue-pale);
+      color: #315c73;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .route-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 780;
+    }
+
+    .route-note svg { width: 13px; height: 13px; }
+
+    .summary-note {
+      padding: 0 18px 14px;
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+
+    .summary-note strong { color: var(--ink); }
+
+    .restaurant-board {
+      margin: 22px 8px 8px;
+      padding: 20px 4px 0;
+      border-top: 1px solid rgba(23, 52, 43, .17);
+    }
+
+    .restaurant-board-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 5px;
+    }
+
+    .restaurant-board-head h3 {
+      margin: 0;
+      font-family: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+      font-size: 21px;
+      line-height: 1.15;
+      font-weight: 650;
+    }
+
+    .restaurant-board-head span {
+      color: var(--orange);
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 820;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .restaurant-board-note {
+      margin: 0 0 12px;
+      color: var(--ink-soft);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .restaurant-card-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .restaurant-card {
+      width: 100%;
+      min-height: 66px;
+      padding: 11px;
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) 16px;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(23, 52, 43, .13);
+      border-radius: 11px;
+      color: var(--ink);
+      background: rgba(255,255,255,.55);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .restaurant-card:hover {
+      border-color: rgba(23, 52, 43, .26);
+      background: rgba(255,255,255,.86);
+    }
+
+    .restaurant-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--green);
+    }
+
+    .restaurant-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .restaurant-card strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .restaurant-card small {
+      display: block;
+      margin-top: 3px;
+      color: var(--ink-soft);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .restaurant-card .card-arrow {
+      color: var(--orange);
+      font-size: 18px;
+      text-align: right;
+    }
+
+    .xmas-board {
+      margin: 22px 8px 8px;
+      padding: 20px 4px 0;
+      border-top: 1px solid rgba(23, 52, 43, .17);
+    }
+
+    .xmas-board-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 5px;
+    }
+
+    .xmas-board-head h3 {
+      margin: 0;
+      font-family: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+      font-size: 21px;
+      line-height: 1.15;
+      font-weight: 650;
+    }
+
+    .xmas-board-head span {
+      color: var(--orange);
+      font-size: 10px;
+      font-weight: 820;
+      white-space: nowrap;
+    }
+
+    .xmas-board-note {
+      margin: 0 0 12px;
+      color: var(--ink-soft);
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .xmas-card-list {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
+      perspective: 900px;
+      padding: 8px 1px 14px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(23, 52, 43, .24) transparent;
+    }
+
+    .xmas-card {
+      flex: 0 0 242px;
+      min-height: 222px;
+      padding: 0;
+      display: block;
+      border: 1px solid rgba(214, 96, 67, .2);
+      border-radius: 8px;
+      color: var(--ink);
+      background: rgba(255,253,247,.72);
+      text-align: left;
+      text-decoration: none;
+      overflow: hidden;
+      scroll-snap-align: start;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .xmas-card:hover {
+      border-color: rgba(214, 96, 67, .48);
+      background: rgba(255,253,247,.96);
+      box-shadow: 0 22px 40px rgba(23, 52, 43, .18), 0 4px 10px rgba(23, 52, 43, .08);
+      transform: translateY(-6px) rotateX(2.4deg) rotateY(-1.4deg) scale(1.012);
+    }
+
+    .xmas-card-media {
+      position: relative;
+      display: block;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--paper-deep);
+    }
+
+    .xmas-card-media img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      transition: transform .38s ease;
+    }
+
+    .xmas-card:hover .xmas-card-media img {
+      transform: scale(1.055);
+    }
+
+    .xmas-card-media::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 42%;
+      background: linear-gradient(transparent, rgba(5, 17, 20, .4));
+      pointer-events: none;
+    }
+
+    .xmas-card-body {
+      display: block;
+      padding: 11px 12px 12px;
+    }
+
+    .xmas-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .xmas-card-status {
+      color: var(--orange);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 830;
+    }
+
+    .xmas-card-area {
+      color: var(--ink-soft);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .xmas-card strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .xmas-card p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .xmas-card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 9px;
+      color: var(--orange);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 820;
+    }
+
+    .xmas-card-cta svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .timeline-button,
+    .restaurant-card,
+    .hair-option,
+    .action-link,
+    .map-control,
+    .detail-close {
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease,
+        background .22s ease,
+        color .22s ease;
+    }
+
+    .restaurant-card:hover {
+      box-shadow: 0 14px 26px rgba(23, 52, 43, .13);
+      transform: translateY(-3px) rotateX(1.4deg);
+    }
+
+    .hair-option:hover {
+      border-color: rgba(23, 52, 43, .2);
+      box-shadow: 0 13px 24px rgba(23, 52, 43, .1);
+      transform: translateY(-3px) rotateX(1.2deg);
+    }
+
+    .action-link:hover,
+    .map-control:hover,
+    .detail-close:hover {
+      box-shadow: 0 9px 20px rgba(23, 52, 43, .15);
+      transform: translateY(-2px) scale(1.015);
+    }
+
+    .ticket-inline-watch {
+      margin: 6px 0 2px 28px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      border-radius: 9px;
+      color: var(--plum);
+      background: var(--plum-pale);
+      font-size: 10px;
+      line-height: 1.4;
+      font-weight: 750;
+    }
+
+    .ticket-inline-watch svg {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+    }
+
+    .hair-board {
+      margin: 7px 0 4px;
+      padding: 13px;
+      border: 1px solid rgba(23, 52, 43, .14);
+      border-radius: 12px;
+      background: rgba(255,255,255,.46);
+    }
+
+    .hair-board-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+
+    .hair-board-head strong {
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .hair-board-head span {
+      color: var(--orange);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 820;
+      letter-spacing: .06em;
+      white-space: nowrap;
+    }
+
+    .hair-board-note {
+      margin: 0 0 9px;
+      color: var(--ink-soft);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .hair-option-list {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(23, 52, 43, .24) transparent;
+      padding: 0 1px 5px;
+    }
+
+    .hair-option {
+      flex: 0 0 218px;
+      padding: 10px;
+      border: 1px solid rgba(23, 52, 43, .1);
+      border-radius: 9px;
+      background: rgba(255,255,255,.62);
+      scroll-snap-align: start;
+    }
+
+    .hair-option-map-button {
+      display: block;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      color: inherit;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .hair-option-map-button:hover .hair-option-name {
+      color: var(--orange);
+    }
+
+    .hair-option-top {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 4px;
+    }
+
+    .hair-option-badge {
+      padding: 3px 6px;
+      border-radius: 999px;
+      color: var(--plum);
+      background: var(--plum-pale);
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 820;
+      white-space: nowrap;
+    }
+
+    .hair-option-name {
+      min-width: 0;
+      font-size: 12px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .hair-option-meta {
+      display: block;
+      margin: 0 0 6px;
+      color: var(--gold);
+      font-size: 9px;
+      line-height: 1.4;
+      font-weight: 760;
+    }
+
+    .hair-option-intro {
+      display: block;
+      margin: 0 0 7px;
+      color: var(--ink-soft);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .hair-option-map-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin: -1px 0 8px;
+      color: var(--ink-soft);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 760;
+    }
+
+    .hair-option-map-hint svg {
+      width: 12px;
+      height: 12px;
+      color: var(--orange);
+    }
+
+    .hair-option-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 11px;
+    }
+
+    .hair-option-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--blue);
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 780;
+      text-decoration: none;
+    }
+
+    .hair-option-links a:hover { text-decoration: underline; }
+    .hair-option-links svg { width: 12px; height: 12px; }
+
+    .musical-option {
+      flex-basis: 244px;
+    }
+
+    .musical-option-glyph {
+      width: 25px;
+      height: 25px;
+      flex: 0 0 auto;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--plum);
+      background: var(--plum-pale);
+    }
+
+    .musical-option-glyph svg {
+      width: 15px;
+      height: 15px;
+      stroke-width: 2;
+    }
+
+    .musical-option-status {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin: 0 0 7px;
+      padding: 4px 7px;
+      border-radius: 999px;
+      color: var(--ink-soft);
+      background: var(--paper-deep);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 820;
+      white-space: nowrap;
+    }
+
+    .musical-option-status.available {
+      color: #28664f;
+      background: #dfece3;
+    }
+
+    .musical-option-status.wait {
+      color: var(--plum);
+      background: var(--plum-pale);
+    }
+
+    .musical-option-status.check {
+      color: #7b5a18;
+      background: var(--gold-pale);
+    }
+
+    .musical-option-meta {
+      display: block;
+      margin: -1px 0 7px;
+      color: var(--ink);
+      font-size: 9.5px;
+      line-height: 1.4;
+      font-weight: 760;
+    }
+
+    .shop-filter-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      padding: 0 1px 9px;
+      scrollbar-width: none;
+    }
+
+    .shop-filter-bar::-webkit-scrollbar { display: none; }
+
+    .shop-filter-chip {
+      flex: 0 0 auto;
+      min-height: 31px;
+      padding: 7px 10px;
+      border: 1px solid rgba(23, 52, 43, .15);
+      border-radius: 999px;
+      color: var(--ink-soft);
+      background: rgba(255,255,255,.58);
+      font-size: 9.5px;
+      line-height: 1;
+      font-weight: 790;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, color .18s ease, background .18s ease;
+    }
+
+    .shop-filter-chip:hover {
+      box-shadow: 0 7px 15px rgba(23,52,43,.11);
+      transform: translateY(-2px);
+    }
+
+    .shop-filter-chip[aria-pressed="true"] {
+      color: var(--paper);
+      background: var(--ink);
+      border-color: var(--ink);
+      box-shadow: 0 8px 18px rgba(23,52,43,.18);
+    }
+
+    .outdoor-option[hidden] { display: none; }
+
+    .shop-brand-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 0 0 7px;
+    }
+
+    .shop-brand-pill {
+      padding: 3px 6px;
+      border-radius: 999px;
+      color: #315c73;
+      background: var(--blue-pale);
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 790;
+      white-space: nowrap;
+    }
+
+    .shop-filter-empty {
+      padding: 14px 10px;
+      color: var(--ink-soft);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .wilson-board {
+      margin: 22px 8px 8px;
+      padding: 20px 4px 0;
+      border-top: 1px solid rgba(23, 52, 43, .17);
+    }
+
+    .wilson-checklist {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      margin: 0 0 16px;
+      padding: 0;
+    }
+
+    .wilson-check-item {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 9px;
+      padding: 11px;
+      border: 1px solid rgba(23, 52, 43, .12);
+      border-radius: 8px;
+      background: rgba(255,255,255,.58);
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .wilson-check-item:hover {
+      border-color: rgba(23, 52, 43, .25);
+      box-shadow: 0 10px 20px rgba(23,52,43,.09);
+      background: rgba(255,255,255,.9);
+    }
+
+    .wilson-check-input {
+      appearance: none;
+      width: 21px;
+      height: 21px;
+      margin: 1px 0 0;
+      display: grid;
+      place-items: center;
+      border: 1.5px solid rgba(23, 52, 43, .34);
+      border-radius: 6px;
+      background: rgba(255,255,255,.72);
+      cursor: pointer;
+    }
+
+    .wilson-check-input::after {
+      content: "";
+      width: 10px;
+      height: 6px;
+      transform: rotate(-45deg) scale(0);
+      border-left: 2px solid white;
+      border-bottom: 2px solid white;
+      transition: transform .16s ease;
+    }
+
+    .wilson-check-input:checked {
+      border-color: var(--ink);
+      background: var(--ink);
+    }
+
+    .wilson-check-input:checked::after { transform: rotate(-45deg) scale(1); }
+
+    .wilson-check-item:has(.wilson-check-input:checked) {
+      background: rgba(226, 233, 225, .72);
+    }
+
+    .wilson-check-item:has(.wilson-check-input:checked) .wilson-check-copy {
+      opacity: .58;
+    }
+
+    .wilson-check-copy strong {
+      display: block;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .wilson-check-copy small {
+      display: block;
+      margin-top: 3px;
+      color: var(--ink-soft);
+      font-size: 9px;
+      line-height: 1.4;
+      font-weight: 720;
+    }
+
+    .wilson-check-copy p {
+      margin: 6px 0 0;
+      color: var(--ink-soft);
+      font-size: 9.5px;
+      line-height: 1.5;
+    }
+
+    .wilson-note-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      color: var(--blue);
+      background: var(--blue-pale);
+      font-size: 8.5px;
+      line-height: 1;
+      font-weight: 820;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .wilson-note-link:hover { text-decoration: underline; }
+    .wilson-note-link svg { width: 11px; height: 11px; }
+
+    .wilson-swatches {
+      display: flex;
+      gap: 5px;
+      margin: 7px 0 0;
+    }
+
+    .wilson-swatch {
+      width: 22px;
+      height: 12px;
+      border: 2px solid rgba(255,255,255,.9);
+      border-radius: 999px;
+      box-shadow: 0 2px 7px rgba(23,52,43,.16);
+    }
+
+    .wilson-store-head { margin-top: 2px; }
+
+    .mobile-daybar { display: none; }
+
+    @media (max-width: 980px) {
+      .topbar { min-height: 70px; }
+      .summary-block:nth-child(2) { display: none; }
+      .workspace { grid-template-columns: minmax(340px, 38vw) minmax(0, 1fr); }
+      .legend { max-width: 290px; }
+      .legend-item:nth-child(n+4) { display: none; }
+    }
+
+    @media (max-width: 760px) {
+      body { overflow: auto; }
+      .app-shell {
+        display: block;
+        height: auto;
+        min-height: 100svh;
+        overflow: visible;
+      }
+      .topbar {
+        padding: 12px 14px;
+        gap: 10px;
+        position: sticky;
+        top: 0;
+      }
+      .section-nav {
+        min-height: var(--section-nav-height);
+        padding: 5px 8px;
+        position: sticky;
+        top: var(--mobile-topbar-height);
+        z-index: 48;
+        backdrop-filter: blur(12px);
+      }
+      .section-nav-list { gap: 5px; }
+      .section-nav-link {
+        min-height: 34px;
+        padding: 6px 3px;
+        gap: 4px;
+        font-size: 10px;
+      }
+      .section-nav-link svg { width: 13px; height: 13px; }
+      .section-target {
+        scroll-margin-top: calc(var(--mobile-topbar-height) + var(--section-nav-height) + 12px);
+      }
+      .brand-mark { width: 38px; height: 38px; }
+      h1 { font-size: 24px; }
+      .eyebrow { font-size: 9px; }
+      .header-intro {
+        margin-top: 5px;
+        font-size: 10px;
+        line-height: 1.45;
+      }
+      .trip-summary { gap: 0; }
+      .summary-block { min-width: 76px; padding: 4px 8px; }
+      .summary-block:nth-child(2) { display: none; }
+      .summary-value { font-size: 12px; }
+      .summary-label { font-size: 8px; }
+
+      .workspace { display: flex; flex-direction: column; }
+      .map-shell {
+        order: 1;
+        height: min(61svh, 620px);
+        min-height: 460px;
+        border-bottom: 1px solid rgba(23,52,43,.16);
+      }
+      .map-viewport { min-height: 100%; }
+      .map-toolbar { top: 10px; left: 10px; right: 10px; }
+      .map-title-chip { padding: 8px 10px; font-size: 10px; }
+      .map-title-chip svg { width: 14px; height: 14px; }
+      .legend { display: none; }
+      .map-controls { right: 10px; bottom: 12px; }
+      .map-control { width: 40px; height: 40px; }
+      .map-hint { left: 10px; bottom: 12px; }
+      .map-marker { width: 34px; height: 34px; }
+      .marker-index { font-size: 8px; top: calc(100% + 5px); }
+
+      .sidebar {
+        order: 2;
+        display: block;
+        border-right: 0;
+        background: var(--paper);
+      }
+      .sidebar-head {
+        position: relative;
+        top: auto;
+        z-index: auto;
+        padding: 14px 4px 10px;
+        background: transparent;
+        backdrop-filter: none;
+        border-bottom: 0;
+      }
+      .section-title { font-size: 20px; }
+      .timeline-scroll {
+        overflow: visible;
+        padding: 0 10px calc(28px + var(--safe-bottom));
+      }
+      .day-group { padding-top: 16px; }
+      .trip-footer {
+        display: block;
+        padding: 24px 18px calc(34px + var(--safe-bottom));
+        border-top: 1px solid rgba(23,52,43,.14);
+        background: var(--paper-deep);
+      }
+      .trip-footer h2 {
+        margin: 0 0 8px;
+        font-family: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+        font-size: 22px;
+        font-weight: 600;
+      }
+      .trip-footer p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 12px;
+        line-height: 1.65;
+      }
+
+      .detail-panel {
+        position: fixed;
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-height: min(72svh, 650px);
+        border-radius: 20px 20px 0 0;
+        transform: translateY(calc(100% + 20px));
+        padding-bottom: var(--safe-bottom);
+      }
+      .detail-panel.is-open { transform: translateY(0); }
+      .detail-panel::before {
+        content: "";
+        position: absolute;
+        top: 7px;
+        left: 50%;
+        width: 42px;
+        height: 4px;
+        border-radius: 99px;
+        transform: translateX(-50%);
+        background: rgba(23,52,43,.2);
+      }
+      .detail-head { padding-top: 25px; }
+      .detail-title { font-size: 27px; }
+      .detail-actions { position: sticky; bottom: 0; background: var(--panel); }
+    }
+
+    @media (max-width: 420px) {
+      .brand-mark { display: none; }
+      .summary-block { min-width: 72px; }
+      .trip-summary .summary-block:last-child { display: none; }
+      .map-shell { min-height: 430px; }
+      .map-hint { display: none; }
+      .day-tab { font-size: 11px; }
+      .map-title-chip { padding: 9px; border-radius: 999px; }
+      .map-title-chip span { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="m20 4-8.5 8.5M14.5 13.5 20 20M8.5 8.5 12 12"/></symbol>
+    <symbol id="i-shopping" viewBox="0 0 24 24"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></symbol>
+    <symbol id="i-hotel" viewBox="0 0 24 24"><path d="M4 21V4h16v17M8 8h2M14 8h2M8 12h2M14 12h2M10 21v-4h4v4"/></symbol>
+    <symbol id="i-theater" viewBox="0 0 24 24"><path d="M3 6c2.4 1.2 5.2 1.2 7.6 0v5.1c0 3.1-1.7 5.4-3.8 5.4S3 14.2 3 11.1V6Z"/><path d="M13.4 5c1.8 1 4.2 1 6 0v4.7c0 2.8-1.3 4.8-3 4.8s-3-2-3-4.8V5Z"/><path d="M5.2 9.2h.01M8.5 9.2h.01M15.3 8.2h.01M17.6 8.2h.01"/><path d="M5.2 12.1c1 .8 2.2.8 3.2 0M15.2 11.1c.7-.6 1.8-.6 2.5 0"/></symbol>
+    <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 22v-5M7 17h10l-5-12-5 12ZM12 5V2"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M6 2v4M18 2v4M3 9h18M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2Z"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15M15 6v15"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-fit" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M6 16V9a4 4 0 0 1 4-4h5M12 20h2a4 4 0 0 0 4-4v-3"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></symbol>
+    <symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 19v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7M3 16h18M6 10V7h5v3M13 10V7h5v3M3 19v2M21 19v2"/></symbol>
+    <symbol id="i-jacket" viewBox="0 0 24 24"><path d="m9 3-5 3 1.5 5L8 10v11h8V10l2.5 1L20 6l-5-3c0 1.7-1.3 3-3 3S9 4.7 9 3Z"/><path d="M12 6v15M9 11h6"/></symbol>
+    <symbol id="i-shirt" viewBox="0 0 24 24"><path d="M9 3 4 5.5l1 5L8 10v11h8V10l3 .5 1-5L15 3c0 1.7-1.3 3-3 3S9 4.7 9 3Z"/></symbol>
+    <symbol id="i-backpack" viewBox="0 0 24 24"><path d="M5 10a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v10H5V10Z"/><path d="M9 6V4a3 3 0 0 1 6 0v2M8 11h8M9 14h6M8 20v1M16 20v1"/></symbol>
+    <symbol id="i-christmas" viewBox="0 0 24 24"><path d="m12 3 6 8h-4l5 6H5l5-6H6l6-8ZM12 17v4M9 21h6"/><path d="m12 1 .7 1.4L14 3l-1.3.6L12 5l-.7-1.4L10 3l1.3-.6L12 1Z"/></symbol>
+    <symbol id="i-tennis" viewBox="0 0 24 24"><ellipse cx="9" cy="9" rx="6" ry="7" transform="rotate(-35 9 9)"/><path d="m13 14 7 7M6 7c2 1 4 3 5 5M11 4c-1 2-2 4-4 5"/></symbol>
+    <symbol id="i-tent" viewBox="0 0 24 24"><path d="M3 21 12 4l9 17M8 21l4-7 4 7M4 21h16"/></symbol>
+    <symbol id="i-utensils" viewBox="0 0 24 24"><path d="M5 2v8M8 2v8M3 10h7v2a3 3 0 0 1-3 3v7M17 2v20M17 2c3 2 3 8 0 10"/></symbol>
+    <symbol id="i-walk" viewBox="0 0 24 24"><circle cx="13" cy="4" r="2"/><path d="m11 7-2 5 3 3-2 6M11 12l5 3 2 5M9 12l-3 2M14 10l3 1"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3 1.2 3.8L17 8l-3.8 1.2L12 13l-1.2-3.8L7 8l3.8-1.2L12 3ZM5 14l.8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8L5 14ZM19 13l.9 2.1 2.1.9-2.1.9L19 19l-.9-2.1L16 16l2.1-.9L19 13Z"/></symbol>
+    <symbol id="i-book-open" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2V3ZM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7V3Z"/></symbol>
+    <symbol id="i-rice-bowl" viewBox="0 0 24 24"><path d="M4 11h16a8 8 0 0 1-16 0ZM7 21h10M8 11c0-4 8-4 8 0M7 7c-1.5-1.5 1.5-2.5 0-4M12 7c-1.5-1.5 1.5-2.5 0-4M17 7c-1.5-1.5 1.5-2.5 0-4"/></symbol>
+    <symbol id="i-ramen" viewBox="0 0 24 24"><path d="M4 10h16l-2 9H6l-2-9ZM8 10c0-4 8-4 8 0M3 10h18M9 3c-1.2 1.4 1.2 2.1 0 3.5M14 3c-1.2 1.4 1.2 2.1 0 3.5M7 22h10"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg><use href="#i-compass"></use></svg>
+        </div>
+        <div class="brand-copy">
+          <p class="eyebrow">Seoul · 24–27 Dec · Christmas Night Walk</p>
+          <h1>首尔，圣诞夜行</h1>
+          <p class="header-intro"><strong>十二月的首尔，街头开始亮起圣诞灯。</strong>我们沿着热汤、咖啡与橱窗里的暖光慢慢走，让圣水的红砖、清溪川的倒影和一场未完待续的音乐剧，把这一年的圣诞夜留得更长一点。</p>
+        </div>
+      </div>
+      <div class="trip-summary" aria-label="行程摘要">
+        <div class="summary-block">
+          <span class="summary-label">Base</span>
+          <span class="summary-value">江南 voco</span>
+        </div>
+        <div class="summary-block">
+          <span class="summary-label">Airport</span>
+          <span class="summary-value">金浦往返</span>
+        </div>
+        <div class="summary-block">
+          <span class="summary-label">Countdown</span>
+          <span class="summary-value" id="headerCountdown">—</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="section-nav" aria-label="页面板块快捷导航">
+      <div class="section-nav-list">
+        <a class="section-nav-link" href="#itineraryBoard" data-section-target="itineraryBoard" aria-current="location">
+          <svg aria-hidden="true"><use href="#i-calendar"></use></svg>
+          <span>行程</span>
+        </a>
+        <a class="section-nav-link" href="#wilsonBoard" data-section-target="wilsonBoard">
+          <svg aria-hidden="true"><use href="#i-shopping"></use></svg>
+          <span>购物清单</span>
+        </a>
+        <a class="section-nav-link" href="#xmasBoard" data-section-target="xmasBoard">
+          <svg aria-hidden="true"><use href="#i-christmas"></use></svg>
+          <span>圣诞打卡</span>
+        </a>
+        <a class="section-nav-link" href="#restaurantBoard" data-section-target="restaurantBoard">
+          <svg aria-hidden="true"><use href="#i-utensils"></use></svg>
+          <span>餐厅</span>
+        </a>
+      </div>
+    </nav>
+
+    <main class="workspace">
+      <aside class="sidebar" aria-label="每日行程">
+        <div class="timeline-scroll" id="timelineScroll"></div>
+      </aside>
+
+      <section class="map-shell" aria-label="首尔互动地图">
+        <div class="map-toolbar">
+          <div class="map-title-chip">
+            <svg aria-hidden="true"><use href="#i-map"></use></svg>
+            <span>点击地图点标查看介绍与链接</span>
+          </div>
+          <div class="legend" aria-hidden="true">
+            <span class="legend-item"><span class="legend-dot"></span>吃住 / 散步</span>
+            <span class="legend-item"><span class="legend-dot shop"></span>购物</span>
+            <span class="legend-item"><span class="legend-dot show"></span>演出</span>
+            <span class="legend-item"><span class="legend-dot event"></span>圣诞活动</span>
+          </div>
+        </div>
+
+        <div class="map-viewport" id="mapViewport">
+          <div class="map-stage" id="mapStage">
+            <div class="tile-layer" id="tileLayer" aria-hidden="true"></div>
+            <svg class="seoul-map" id="seoulMap" viewBox="0 0 1000 900" preserveAspectRatio="none" role="img" aria-label="首尔主要行程区域的示意地图">
+              <defs>
+                <pattern id="microGrid" width="26" height="26" patternUnits="userSpaceOnUse">
+                  <path d="M 26 0 L 0 0 0 26" fill="none" stroke="rgba(23,52,43,.055)" stroke-width="1"/>
+                </pattern>
+                <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#17342b" flood-opacity=".16"/>
+                </filter>
+              </defs>
+              <g id="schematicBase">
+              <rect width="1000" height="900" fill="#e7eadf"/>
+              <rect width="1000" height="900" fill="url(#microGrid)" opacity=".42"/>
+
+              <!-- Stylized Seoul districts -->
+              <path class="map-district" fill="#eee7d6" d="M0 0h310l-22 180-112 80L20 369 0 344V0Z"/>
+              <path class="map-district" fill="#e9e4d4" d="M308 0h268l-8 168-116 74-126-8-40-54 22-180Z"/>
+              <path class="map-district" fill="#f0e9d9" d="M574 0h426v350l-139 24-68-50-16-92-99-37-96-27-8-168Z"/>
+              <path class="map-district" fill="#e4e8dc" d="M0 342l176 107 118 35 130-24 72 94-38 164-95 88-72 94H0V342Z"/>
+              <path class="map-district" fill="#ece7d8" d="M420 460l76 94 140 32 85-65 73 5 206 48v326H363l-95-88 38-164 72-94 42-94Z"/>
+              <path class="map-district" fill="#e5e9dd" d="M570 348l16-92 99-37 96 27 139-24 80 80v218l-52 68-143 8-73-5-85 65-140-32-38-164 101-112Z"/>
+
+              <!-- Parks and hills -->
+              <path class="park" d="M132 214c25-42 84-53 112-19 24 30 4 73-32 83-40 11-105-20-80-64Z"/>
+              <path class="park" d="M764 170c54-38 135-10 141 42 6 47-52 83-105 67-52-16-81-76-36-109Z"/>
+              <path class="park" d="M355 663c29-26 72-21 86 13 13 31-7 68-43 74-42 6-75-57-43-87Z"/>
+              <path class="park" d="M858 636c22-33 76-34 95 2 19 36-14 82-54 77-40-4-61-46-41-79Z"/>
+              <path class="park" d="M56 716c36-28 90-12 98 28 8 41-41 72-79 56-35-15-49-61-19-84Z"/>
+
+              <!-- Han River -->
+              <path class="river" d="M-40 450c113-10 179-23 261 5 77 27 150 67 238 64 91-4 150-66 245-78 93-11 184 20 336 0v128c-128 18-220-8-304 5-93 14-163 65-262 69-104 4-181-53-263-64-84-12-161-1-251 8V450Z"/>
+              <path class="river-detail" d="M-20 489c118-9 188-21 260 0 86 25 160 64 247 55 101-10 171-67 257-72 91-5 171 19 276 6"/>
+
+              <!-- Major roads -->
+              <g>
+                <path class="road major" d="M61 199c165 74 323 79 474 24 111-40 237-38 397 19"/>
+                <path class="road major" d="M136 818c93-176 174-309 321-407 134-89 263-210 442-313"/>
+                <path class="road major" d="M24 597c141-86 263-129 426-117 154 11 254 103 505 67"/>
+                <path class="road major" d="M220 35c50 144 101 238 183 333 87 100 133 196 159 477"/>
+                <path class="road major" d="M691 18c-43 158-74 254-92 394-16 130 29 258 76 451"/>
+                <path class="road" d="M53 302c150 17 251 56 362 130 93 62 186 74 329 52 91-15 172-11 230 17"/>
+                <path class="road" d="M109 709c91-41 163-59 281-47 97 10 147 64 247 65 114 1 203-49 308-78"/>
+                <path class="road" d="M365 84c46 123 81 224 102 331 23 118 12 258-13 398"/>
+                <path class="road" d="M817 59c-43 121-79 212-105 318-31 127-17 267 16 426"/>
+                <path class="road" d="M44 391c103 16 222 35 332 75 95 34 177 42 286 11 96-27 201-26 300 13"/>
+              </g>
+
+              <!-- Minor urban grid -->
+              <g opacity=".9">
+                <path class="block-line" d="M34 102h911M34 143h911M34 181h911M34 245h911M34 285h911"/>
+                <path class="block-line" d="M34 576h911M34 624h911M34 681h911M34 746h911M34 803h911"/>
+                <path class="block-line" d="M74 31v816M128 31v816M198 31v816M275 31v816M339 31v816"/>
+                <path class="block-line" d="M451 31v816M522 31v816M596 31v816M659 31v816M737 31v816M805 31v816M876 31v816M938 31v816"/>
+              </g>
+              <g>
+                <path class="road edge" d="M88 234c88-34 170-41 259-7 46 18 73 55 77 100"/>
+                <path class="road edge" d="M776 230c-35 31-55 66-59 115M758 367c70 7 129 30 185 66M478 391c78-38 141-75 220-113"/>
+                <path class="road edge" d="M425 597c65-19 124-13 183 19M72 686c100-40 205-45 309-6M772 708c65-18 121-6 174 33"/>
+              </g>
+
+              <g aria-hidden="true">
+                <text class="area-label" x="144" y="264">마포 · 麻浦</text>
+                <text class="area-label small" x="88" y="707">신도림 · 新道林</text>
+                <text class="area-label small" x="323" y="562">용산 · 龙山</text>
+                <text class="area-label" x="537" y="240">종로 · 钟路</text>
+                <text class="area-label small" x="466" y="281">명동 · 明洞</text>
+                <text class="area-label small" x="733" y="316">성수 · 圣水</text>
+                <text class="area-label" x="645" y="681">강남 · 江南</text>
+                <text class="area-label small" x="307" y="632">도산 · 岛山</text>
+                <text class="area-label small" x="866" y="504">한강 · 汉江</text>
+              </g>
+              </g>
+
+              <g id="routeLayer" aria-hidden="true">
+                <path class="route-line day-1" data-route-day="1" d="M565 594 C590 550 612 515 640 500 C680 520 708 550 730 590 C675 620 610 650 540 680"/>
+                <path class="route-line day-2" data-route-day="2" d="M780 370 C810 360 845 350 875 340 C900 370 915 410 920 445 C760 495 495 650 68 722"/>
+                <path class="route-line day-3" data-route-day="3" d="M520 115 C548 140 574 166 600 190 C625 150 648 118 670 95 C600 160 480 220 390 300 C365 255 342 210 330 180 C365 205 397 230 430 250"/>
+              </g>
+            </svg>
+            <svg class="route-overlay" id="routeOverlay" viewBox="0 0 1000 900" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <div class="markers-layer" id="markersLayer"></div>
+          </div>
+        </div>
+
+        <div class="map-controls" aria-label="地图缩放控制">
+          <button class="map-control" id="zoomIn" type="button" aria-label="放大地图"><svg aria-hidden="true"><use href="#i-plus"></use></svg></button>
+          <button class="map-control" id="zoomOut" type="button" aria-label="缩小地图"><svg aria-hidden="true"><use href="#i-minus"></use></svg></button>
+          <button class="map-control" id="fitMap" type="button" aria-label="恢复全图"><svg aria-hidden="true"><use href="#i-fit"></use></svg></button>
+        </div>
+        <div class="map-hint"><strong id="zoomLevel">Z12</strong> · 拖动浏览，缩放时自动加载更细地图</div>
+        <a class="map-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>
+
+        <aside class="detail-panel" id="detailPanel" aria-live="polite" aria-label="地点详情">
+          <div id="detailContent">
+            <div class="empty-detail">
+              <svg aria-hidden="true"><use href="#i-pin"></use></svg>
+              <p>选择一个地图点标<br>查看当天安排、地址和链接</p>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tripStart = new Date("2026-12-24T00:00:00+09:00");
+    const tripEnd = new Date("2026-12-27T23:59:59+09:00");
+
+    const dayMeta = {
+      1: { date: "12月24日", weekday: "周四", theme: "抵达 · 剪发 · 江南" },
+      2: { date: "12月25日", weekday: "周五", theme: "完整钟路日 · 圣诞灯 · Let Me Fly" },
+      3: { date: "12月26日", weekday: "周六", theme: "圣水购物 · 下午医美 · 清淡晚餐" }
+    };
+
+    const places = [
+      {
+        id: "voco",
+        day: 1,
+        time: "14:00",
+        type: "hotel",
+        icon: "i-bed",
+        typeLabel: "住宿",
+        name: "voco Seoul Gangnam",
+        shortName: "voco 江南",
+        subtitle: "预计 14:00 到酒店，先午餐再去理发",
+        date: "12/24",
+        address: "서울 강남구 도산대로 144",
+        lat: 37.5223,
+        lng: 127.0355,
+        x: 565,
+        y: 594,
+        duration: "约 45 分钟",
+        description: "CZ317 预计 12:25 抵达金浦，取行李后直接去江南。正常路况下约 13:50–14:20 到酒店，先寄存行李或办理入住，再留出一顿不赶时间的午餐。",
+        tip: "午餐后去理发，16:00 开始；具体去哪一家还没定。若房间未准备好，可先寄存行李，不影响后面的安排。",
+        links: [
+          { label: "地图", url: "https://map.naver.com/p/search/voco%20Seoul%20Gangnam", icon: "i-pin" },
+          { label: "酒店官网", url: "https://www.ihg.com/voco/hotels/us/en/seoul/selvo/hoteldetail", icon: "i-external" }
+        ]
+      },
+      {
+        id: "hair-slot",
+        day: 1,
+        scheduleOnly: true,
+        time: "16:00",
+        type: "cut",
+        icon: "i-scissors",
+        typeLabel: "店待定",
+        name: "理发 · 5 选 1",
+        shortName: "理发 · 店待定",
+        subtitle: "16:00 · 地点从下方候选中确定",
+        date: "12/24",
+        address: "서울 강남구 일대 · 理发店待定",
+        duration: "约 45 分钟",
+        description: "12 月 24 日 16:00 先预留理发时段，具体店铺还没确定。中间留出午餐时间，再从下方五家候选里按位置、风格、价格和英文沟通方式确定。",
+        tip: "先确定最想去的店，再按对应网站预约。剪发控制在 1–1.5 小时，之后直接去岛山晚餐。",
+        links: []
+      },
+      {
+        id: "dosan",
+        day: 1,
+        time: "19:30",
+        type: "food",
+        icon: "i-utensils",
+        typeLabel: "晚餐 · 散步",
+        name: "岛山公园 / 狎鸥亭晚餐",
+        shortName: "岛山公园",
+        subtitle: "把圣诞夜留给一顿不赶时间的晚餐",
+        date: "12/24",
+        address: "서울 강남구 도산대로45길 일대",
+        lat: 37.5230,
+        lng: 127.0363,
+        x: 540,
+        y: 680,
+        duration: "约 2 小时",
+        description: "购物结束后回到岛山公园一带散步，再在附近吃晚餐。这里不锁死具体餐厅，方便根据当天排队、体力和想吃的口味现场决定。",
+        tip: "圣诞夜热门餐厅容易满位。若想吃得正式，提前 1–2 周挑一家并预约；否则保留为机动晚餐区域。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%8F%84%EC%82%B0%20%EA%B3%B5%EC%9B%90", icon: "i-pin" }
+        ]
+      },
+      {
+        id: "osprey-seongsu",
+        day: 3,
+        time: "10:30",
+        type: "shop",
+        icon: "i-backpack",
+        typeLabel: "户外购物",
+        name: "Osprey Trailhead 圣水",
+        shortName: "Osprey 圣水",
+        subtitle: "从背包开始，把背负和容量一次试清",
+        date: "12/26",
+        address: "서울 성동구 아차산로 54 · 1층",
+        lat: 37.5446,
+        lng: 127.0554,
+        x: 780,
+        y: 370,
+        duration: "约 50 分钟",
+        description: "圣水第一站先看 Osprey。这里适合集中试背、比较容量和背负系统，也方便确认后续钟路店是否还值得补逛。",
+        tip: "试包时装上店内配重，重点看肩带、腰带和背长；记下型号和价格，到钟路再比较。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%ED%8A%B8%EB%A0%88%EC%9D%BC%ED%97%A4%EB%93%9C%20%EC%84%B1%EC%88%98%EC%A0%90", icon: "i-pin" },
+          { label: "Osprey 韩国", url: "https://www.osprey.com/kr/ko", icon: "i-external" }
+        ]
+      },
+      {
+        id: "matin",
+        day: 3,
+        time: "11:20",
+        type: "shop",
+        icon: "i-shirt",
+        typeLabel: "时装购物",
+        name: "Matin Kim 圣水旗舰店",
+        shortName: "Matin Kim",
+        subtitle: "看当季成衣，也看包袋和小配件",
+        date: "12/26",
+        address: "서울 성동구 연무장3길 9",
+        lat: 37.5433,
+        lng: 127.0562,
+        x: 875,
+        y: 340,
+        duration: "约 45 分钟",
+        description: "从 Osprey 走过来后看 Matin Kim。旗舰店货量通常更完整，适合试版型、挑当季颜色，再决定是否继续在圣水其他买手店比价。",
+        tip: "常规营业时间约 11:00–20:00。试衣高峰在午后，先看最想买的单品，避免把时间都耗在排队。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%A7%88%EB%97%91%ED%82%B4%20%EC%84%B1%EC%88%98%20%ED%94%8C%EB%9E%98%EA%B7%B8%EC%8B%AD", icon: "i-pin" },
+          { label: "Matin Kim", url: "https://matinkim.com/", icon: "i-external" }
+        ]
+      },
+      {
+        id: "seongsu-walk",
+        day: 3,
+        time: "13:35",
+        type: "food",
+        icon: "i-walk",
+        typeLabel: "City walk",
+        name: "圣水洞散步",
+        shortName: "圣水散步",
+        subtitle: "午餐后的红砖街巷、小店和咖啡",
+        date: "12/26",
+        address: "서울 성동구 연무장길 일대",
+        lat: 37.5444,
+        lng: 127.0594,
+        x: 920,
+        y: 445,
+        duration: "约 40 分钟",
+        description: "吃完水芹菜汤饭后，在练武场街附近快速走一小段，只挑一家店或咖啡店停留，给下午去 Banobagi 留出余量。",
+        tip: "14:10 结束圣水散步，14:15 出发去彦州站。预留 35–40 分钟通勤，15:00 前到医院。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%97%B0%EB%AC%B4%EC%9E%A5%EA%B8%B8", icon: "i-pin" }
+        ]
+      },
+      {
+        id: "let-me-fly",
+        day: 2,
+        time: "18:00",
+        type: "show",
+        icon: "i-theater",
+        typeLabel: "音乐剧已定",
+        name: "《Let Me Fly》",
+        shortName: "Let Me Fly",
+        subtitle: "12/25 18:00 · 中英日韩字幕场",
+        date: "12/25",
+        address: "서울특별시 종로구 종로33길 15 · 두산아트센터",
+        lat: 37.5724,
+        lng: 127.0014,
+        duration: "约 120 分钟",
+        description: "12 月 25 日 18:00 在钟路 Doosan Art Center 看《Let Me Fly》。白天把钟路户外、网球装备和圣诞灯一路走完，提前吃过晚饭再进剧场；本场提供中、英、日、韩字幕。",
+        tip: "按官方日历确认，12/25 为 14:00、18:00 两场，行程锁定 18:00 晚场。请在 17:25 前到剧场取票，并确认四语字幕屏视角；演出约 20:00 结束。",
+        links: [
+          { label: "YES24 官方票务", url: "https://ticket.yes24.com/Perf/59852", icon: "i-external" },
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%91%90%EC%82%B0%EC%95%84%ED%8A%B8%EC%84%BC%ED%84%B0", icon: "i-pin" },
+          { label: "演出资料", url: "https://festival.ttpk.co.kr/festivals/PF299346", icon: "i-external" }
+        ]
+      },
+      {
+        id: "clinic",
+        day: 3,
+        time: "15:00",
+        type: "beauty",
+        icon: "i-sparkles",
+        typeLabel: "皮肤科预约",
+        name: "Banobagi 皮肤科",
+        shortName: "Banobagi",
+        subtitle: "26 日下午 · 论岘洞皮肤科预约",
+        date: "12/26",
+        address: "서울 강남구 봉은사로 219 · 두남빌딩",
+        lat: 37.5071,
+        lng: 127.0348,
+        duration: "约 2.5–3 小时",
+        description: "上午在圣水逛 Osprey、Matin Kim，吃完水芹菜午餐后从圣水去彦州站的 Banobagi。项目预计占用 2.5–3 小时，结束后回圣水吃清淡晚餐。",
+        tip: "具体项目和 15:00 预约仍需与医院确认。提前问清素颜要求、当天能否上妆、恢复期、防晒，以及项目对应的完整忌口清单。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%B0%94%EB%85%B8%EB%B0%94%EA%B8%B0%ED%94%BC%EB%B6%80%EA%B3%BC", icon: "i-pin" },
+          { label: "医院官网", url: "https://www.skinbanobagi.com/web/sub/location", icon: "i-external" }
+        ]
+      },
+      {
+        id: "outdoor-slot",
+        day: 2,
+        scheduleOnly: true,
+        time: "10:30",
+        type: "shop",
+        icon: "i-shopping",
+        typeLabel: "4 家筛选",
+        name: "钟路户外店 · 横向筛选",
+        shortName: "钟路户外店",
+        subtitle: "始祖鸟、Osprey、背包与折扣集合店",
+        date: "12/25",
+        address: "서울 종로구 종로5가 일대",
+        duration: "约 1.5 小时",
+        description: "把钟路户外街做成一个可筛选的横向店铺清单。按始祖鸟、Osprey、背包轻量、集合店和折扣优先切换，再决定当天真正要进哪两家。",
+        tip: "不用按顺序全部走完。先锁定最想看的一个品牌，再比较价格与货量；12:00 左右结束，接 VITRO 和 Wilson，给下午医美留余量。",
+        links: []
+      },
+      {
+        id: "ace",
+        day: 2,
+        mapOnly: true,
+        time: "10:30",
+        type: "shop",
+        icon: "i-tent",
+        typeLabel: "户外集合店",
+        name: "Ace Outdoor 钟路",
+        shortName: "Ace Outdoor",
+        subtitle: "大型集合店，适合先扫品牌和价格",
+        date: "12/25",
+        address: "서울 종로구 종로 224-1 · 2층",
+        lat: 37.5708,
+        lng: 126.9994,
+        x: 520,
+        y: 115,
+        duration: "约 45 分钟",
+        description: "钟路户外街的第一站。这里适合快速看多个品牌、比较陈列价格和折扣，再决定后两家要重点看什么。",
+        tip: "常规周一至周六约 10:00–19:00，周日休息；节假日安排出发前再确认。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%97%90%EC%9D%B4%EC%8A%A4%EC%95%84%EC%9B%83%EB%8F%84%EC%96%B4%20%EC%A2%85%EB%A1%9C", icon: "i-pin" }
+        ]
+      },
+      {
+        id: "mygear",
+        day: 2,
+        mapOnly: true,
+        time: "11:05",
+        type: "shop",
+        icon: "i-backpack",
+        typeLabel: "户外集合店",
+        name: "My Gear 钟路直营店",
+        shortName: "My Gear",
+        subtitle: "背包、露营和轻量化装备更集中",
+        date: "12/25",
+        address: "서울 종로구 종로40가길 46 · 3층",
+        lat: 37.5702,
+        lng: 126.9980,
+        x: 600,
+        y: 190,
+        duration: "约 40–50 分钟",
+        description: "从 Ace 走过来的第二家集合店。更适合带着明确清单来比较背包、配件和小型露营装备。",
+        tip: "店在巷内建筑二层。若在 Ace 已经看到同款，直接比到手价和赠品，不必重复试。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%A7%88%EC%9D%B4%EA%B8%B0%EC%96%B4%20%EC%A2%85%EB%A1%9C%EC%A7%81%EC%98%81%EC%A0%90", icon: "i-pin" }
+        ]
+      },
+      {
+        id: "fivega",
+        day: 2,
+        mapOnly: true,
+        time: "11:30",
+        type: "shop",
+        icon: "i-shopping",
+        typeLabel: "户外集合店",
+        name: "5ga Gear 钟路",
+        shortName: "5ga Gear",
+        subtitle: "始祖鸟、K2 与价格相对友好的集合店",
+        date: "12/25",
+        address: "서울특별시 종로구 종로34길 13 · 1층",
+        lat: 37.5702793,
+        lng: 127.0028045,
+        duration: "约 30–45 分钟",
+        description: "5ga Gear 更适合放在价格比较清单里。店内能看到始祖鸟、K2、Petzl 等品牌，但不做攀岩的话，重点放在服装、背包和配件折扣即可。",
+        tip: "先问清楚退税、会员价和是否能调货。若 Ace 或 My Gear 已有更合适的型号，不必为了低价再绕回来。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/5%EA%B0%80%EA%B8%B0%EC%96%B4%20%EC%A2%85%EB%A1%9C", icon: "i-pin" },
+          { label: "Naver 预约", url: "https://m.booking.naver.com/booking/5/bizes/1637751", icon: "i-external" }
+        ]
+      },
+      {
+        id: "osprey-jongno",
+        day: 2,
+        mapOnly: true,
+        time: "11:45",
+        type: "shop",
+        icon: "i-backpack",
+        typeLabel: "Osprey 补逛",
+        name: "Trailhead 钟路5街",
+        shortName: "Osprey 钟路",
+        subtitle: "补看背包细节、配件和第二选择",
+        date: "12/25",
+        address: "서울 종로구 동호로38길 24 · 1층",
+        lat: 37.5711,
+        lng: 127.0019,
+        x: 670,
+        y: 95,
+        duration: "约 30–40 分钟",
+        description: "钟路户外街的 Osprey 补逛点。适合确认前面看中的型号、买配件，或比较圣水没看到的颜色。",
+        tip: "如果圣水已经买到理想背包，这一站可以缩短，给明洞和清溪川留更多余量。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%ED%8A%B8%EB%A0%88%EC%9D%BC%ED%97%A4%EB%93%9C%20%EC%A2%85%EB%A1%9C5%EA%B0%80%EC%A0%90", icon: "i-pin" }
+        ]
+      },
+      {
+        id: "wilson-slot",
+        day: 2,
+        scheduleOnly: true,
+        time: "14:00",
+        type: "shop",
+        icon: "i-shopping",
+        typeLabel: "2 个目标",
+        name: "Wilson 采购 · 2 个想买款",
+        shortName: "Wilson 采购",
+        subtitle: "VITRO 比价后到明洞查两件目标款",
+        date: "12/25",
+        address: "明洞 / 江南新世界 / 东大门",
+        duration: "约 35–45 分钟",
+        description: "12:05 先在 VITRO 比标准拍价格、赠品与穿线，结束后去明洞自由觅食，14:00 再到 Wilson 集中确认两件已经确定想买的单品。江南新世界只作为缺货备选。",
+        tip: "定制拍和韩国限定包都不保证每家都有。进店先出示小红书图片和型号，再问调货、退税、穿线和取件时间。",
+        links: []
+      },
+      {
+        id: "wilson",
+        day: 2,
+        mapOnly: true,
+        time: "14:00",
+        type: "shop",
+        icon: "i-tennis",
+        typeLabel: "网球装备",
+        name: "Wilson 明洞旗舰店",
+        shortName: "Wilson 明洞",
+        subtitle: "先问韩国限定球包与 Clash 定制",
+        date: "12/25",
+        address: "서울 중구 명동길 20",
+        lat: 37.5637,
+        lng: 126.9850,
+        x: 390,
+        y: 300,
+        duration: "约 45–60 分钟",
+        description: "Wilson 采购的第一优先门店。先出示两条笔记的目标款：银色 Clash 100L v3、280g、冰蓝线，以及韩国限定小鸡黄网球双肩包。",
+        tip: "定制是否能下单、花色和 emoji 能否照做都要现场确认。球包若没货，再问江南新世界店调货。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%9C%8C%EC%8A%A8%20%EB%AA%85%EB%8F%99%20%EC%A7%81%EC%98%81%EC%A0%90", icon: "i-pin" },
+          { label: "Wilson 韩国", url: "https://kr.wilson.com/pages/stores-locator", icon: "i-external" }
+        ]
+      },
+      {
+        id: "wilson-gangnam",
+        day: 2,
+        mapOnly: true,
+        time: "备选",
+        type: "shop",
+        icon: "i-shopping",
+        typeLabel: "Wilson 补查",
+        name: "Wilson 新世界江南 8F",
+        shortName: "Wilson 江南",
+        subtitle: "离酒店近，补查韩国限定包和第二选择",
+        date: "12/25 备选",
+        address: "서울 서초구 신반포로 176 · 신세계백화점 강남점 8층",
+        lat: 37.5044,
+        lng: 127.0045,
+        duration: "约 30–40 分钟",
+        description: "如果明洞没有小鸡黄球包，这里作为江南补查点。根据第三篇笔记，Wilson 江南当时新品和价格都一般，但胜在离 voco 近，适合回酒店前快速确认。",
+        tip: "先问明洞店能否调货再决定是否专程来。这里不适合作为唯一 Wilson 门店。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%9C%8C%EC%8A%A8%20%EC%8B%A0%EC%84%B8%EA%B3%84%EB%B0%B1%ED%99%94%EC%A0%90%20%EA%B0%95%EB%82%A8%EC%A0%90", icon: "i-pin" },
+          { label: "新世界江南", url: "https://www.shinsegae.com/store/main.do?storeCd=SC00005", icon: "i-external" }
+        ]
+      },
+      {
+        id: "vitro-tennis",
+        day: 2,
+        time: "12:05",
+        type: "shop",
+        icon: "i-shopping",
+        typeLabel: "网球比价",
+        name: "VITRO 网球店",
+        shortName: "VITRO 网球",
+        subtitle: "先比标准拍价格、赠品和穿线速度",
+        date: "12/25",
+        address: "서울 중구 동대문역사문화공원역 8번 출구 인근",
+        lat: 37.5655,
+        lng: 127.0093,
+        duration: "约 35–45 分钟",
+        description: "第三篇首尔网球攻略里，VITRO 的拍价最低，并会送线、手胶、避震、护腕和袜子，现场也能穿线。适合比 Clash 标准款和冰蓝线价格。",
+        tip: "笔记没有说明能下 Wilson 定制单，因此把这里当标准拍与穿线比价点；别把它当成银色定制一定能买到的门店。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/VITRO%20%ED%85%8C%EB%8B%88%EC%8A%A4%20%EB%8F%99%EB%8C%80%EB%AC%B8", icon: "i-pin" }
+        ]
+      },
+      {
+        id: "lunch-slot",
+        day: 2,
+        scheduleOnly: true,
+        time: "13:00",
+        type: "food",
+        icon: "i-utensils",
+        typeLabel: "午餐 3 选 1",
+        name: "明洞午餐 · 3 选 1",
+        shortName: "明洞午餐",
+        subtitle: "一只鸡 / 一片里脊 / 肥牛辣炒章鱼",
+        date: "12/25",
+        address: "서울 중구 명동·을지로 일대",
+        duration: "约 50 分钟",
+        description: "VITRO 结束后先吃饭，再走去 Wilson。三选一分别对应暖汤、韩牛烤肉和重口下饭锅物，按当天排队和想吃程度决定。",
+        tip: "13:50 前结束，14:00 到 Wilson 明洞。热门店先看现场排队，不必为了某一家拖乱后面的灯点和剧场时间。",
+        links: []
+      },
+      {
+        id: "shinsegae-lights",
+        day: 2,
+        time: "14:55",
+        type: "event",
+        icon: "i-christmas",
+        image: "https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&w=1200&q=82",
+        typeLabel: "灯光秀",
+        name: "新世界百货圣诞灯光",
+        shortName: "新世界灯光",
+        subtitle: "明洞整栋百货变成圣诞投影幕布",
+        date: "12/25",
+        address: "서울 중구 소공로 63 · 신세계백화점 본점",
+        lat: 37.5608,
+        lng: 126.9810,
+        duration: "约 25–35 分钟",
+        description: "午餐后从明洞走到新世界百货。圣诞季的整栋建筑会变成巨大的投影幕布，不需要额外门票，接着还能一路走去光化门和清溪川。",
+        tip: "人潮会集中在路口，拍照后不要停留太久；15:35 左右往光化门移动。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%8B%A0%EC%84%B8%EA%B3%84%EB%B0%B1%ED%99%94%EC%A0%90%20%EB%B3%B8%EC%A0%90%20%ED%81%AC%EB%A6%AC%EC%8A%A4%EB%A7%88%EC%8A%A4", icon: "i-pin" },
+          { label: "Visit Seoul", url: "https://english.visitseoul.net/", icon: "i-external" }
+        ]
+      },
+      {
+        id: "gwanghwamun-market",
+        day: 2,
+        time: "15:35",
+        type: "event",
+        icon: "i-christmas",
+        image: "https://images.unsplash.com/photo-1512389142860-9c449e58a543?auto=format&fit=crop&w=1200&q=82",
+        typeLabel: "圣诞活动",
+        name: "光化门圣诞市集",
+        shortName: "光化门市集",
+        subtitle: "在圣诞摊位和树灯之间慢慢走",
+        date: "12/25",
+        address: "서울 종로구 세종대로 일대",
+        lat: 37.5727,
+        lng: 126.9774,
+        x: 330,
+        y: 180,
+        duration: "约 35–45 分钟",
+        description: "从明洞的霓虹走进光化门，沿摊位和树灯慢慢逛。手里握一杯热饮，挑一两样小食，把圣诞氛围接进下午的钟路路线。",
+        tip: "这里控制成轻量停留，不排需要久等的正餐；16:15 左右转去清溪川，给剧场晚餐和取票留足时间。2026 年开放时间和摊位以主办方公告为准。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EA%B4%91%ED%99%94%EB%AC%B8%20%ED%81%AC%EB%A6%AC%EC%8A%A4%EB%A7%88%EC%8A%A4%20%EB%A7%88%EC%BC%93", icon: "i-pin" },
+          { label: "首尔旅游", url: "https://english.visitseoul.net/", icon: "i-external" }
+        ]
+      },
+      {
+        id: "cheonggyecheon",
+        day: 2,
+        time: "16:15",
+        type: "event",
+        icon: "i-christmas",
+        image: "https://images.unsplash.com/photo-1482517967863-00e15c9b44be?auto=format&fit=crop&w=1200&q=82",
+        typeLabel: "夜间散步",
+        name: "清溪川灯节",
+        shortName: "清溪川灯节",
+        subtitle: "沿着灯河走，把圣诞夜拉长一点",
+        date: "12/25",
+        address: "서울 종로구 청계천로 일대",
+        lat: 37.5692,
+        lng: 126.9793,
+        x: 430,
+        y: 250,
+        duration: "约 40–60 分钟",
+        description: "水面把灯光揉成一条流动的金色，耳边只剩水声和脚步声。沿清溪川慢慢走一段，不需要赶去下一站，这就是圣诞夜最松弛的收尾。",
+        tip: "只走一小段就转去晚餐，16:45 前离开清溪川。接近 0°C 时体感更冷，手套和保暖外层放在随身包。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%B2%AD%EA%B3%84%EC%B2%9C%20%EB%93%B1%EC%B6%95%EC%A0%9C", icon: "i-pin" },
+          { label: "Visit Seoul", url: "https://english.visitseoul.net/", icon: "i-external" }
+        ]
+      },
+      {
+        id: "coex-library",
+        day: 1,
+        time: "20:45",
+        type: "event",
+        icon: "i-book-open",
+        image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=82",
+        typeLabel: "圣诞夜",
+        name: "COEX 星光图书馆",
+        shortName: "COEX 星光图书馆",
+        subtitle: "圣诞灯饰 + 书墙，圣诞夜室内收尾",
+        date: "12/24",
+        address: "서울 강남구 영동대로 513 · 별마당도서관",
+        lat: 37.5115,
+        lng: 127.0592,
+        duration: "约 40–50 分钟",
+        description: "晚餐后从岛山去 COEX，高大的书墙在夜里像一条发光的峡谷，圣诞灯饰藏在书脊和人群之间。它离江南酒店近，适合作为圣诞夜最后一站。",
+        tip: "20:35 左右从餐厅出发，预计 21:00 前到。先确认 COEX 与图书馆圣诞季营业时间；如果晚餐拖得太晚，就直接回酒店。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%B3%84%EB%A7%88%EB%8B%B9%20%EB%8F%84%EC%84%9C%EA%B4%80", icon: "i-pin" },
+          { label: "Starfield COEX", url: "https://www.starfield.co.kr/coex/", icon: "i-external" }
+        ]
+      },
+      {
+        id: "minari-soup",
+        day: 3,
+        optional: true,
+        time: "12:30",
+        type: "food",
+        icon: "i-rice-bowl",
+        typeLabel: "午餐",
+        name: "능동미나리 圣水店",
+        shortName: "水芹菜汤饭",
+        subtitle: "12/26 12:30 · 圣水店水芹菜午餐",
+        date: "12/26",
+        address: "서울 성동구 연무장길 42",
+        lat: 37.5442,
+        lng: 127.0572,
+        duration: "约 1 小时",
+        description: "把水芹菜一把压进滚烫的牛骨汤里，配米饭吃到额头微微冒汗。圣水店就在当天的购物动线上，逛完 Matin Kim 正好来吃。",
+        tip: "招牌是 미나리곰탕（水芹菜牛骨汤），饭点可能排队。12:30 到店，给点餐和等位留一点弹性。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%8A%A5%EB%8F%99%EB%AF%B8%EB%82%98%EB%A6%AC%20%EC%84%B1%EC%88%98%EC%A0%90", icon: "i-pin" },
+          { label: "菜单与排队", url: "https://www.diningcode.com/profile.php?rid=4VzaA9lYCxTz", icon: "i-external" }
+        ]
+      },
+      {
+        id: "hanmiok-yeouido",
+        day: 0,
+        optional: true,
+        time: "候选用餐",
+        type: "food",
+        icon: "i-utensils",
+        image: "https://i.autoreserve.com/thumb/1200x1200/restaurant_image/image/065/559/531/65559531/1f3da5e9-ca3f-4474-852b-c0f20b858fd9.jpeg?format=webp",
+        typeLabel: "韩牛烤肉",
+        name: "한미옥 여의도직영점 · 韩美屋",
+        shortName: "韩美屋韩牛烤肉",
+        subtitle: "30年韩牛老店 · 锅盖上的烤肉与鸡蛋",
+        date: "候选用餐",
+        address: "서울 영등포구 여의나루로 81 · 한마루빌딩 1층 5호",
+        lat: 37.5242364,
+        lng: 126.9276927,
+        duration: "约 1.5 小时",
+        description: "汝矣岛开了约 30 年的韩牛烤肉店。薄切牛胸肉、蔬菜和小菜铺在传统铁锅盖上，店员会在桌边现烤；锅边的鸡蛋慢慢煎出焦香，再配热汤和米饭，是那种很有首尔本地烟火气的完整一餐。",
+        tip: "平日午市 11:00–14:30、晚市 17:00–22:00；周末午市 12:00–15:00。招牌是 차돌구절판，饭点容易排队，出发前先用 CatchTable 或 AutoReserve 看排队和预约。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/entry/place/1297386601?lng=126.9276927&lat=37.5242364&placePath=%2Fhome&entry=plt&searchType=place", icon: "i-pin" },
+          { label: "官方网站", url: "https://hanmiok-yeouido.com/zh-cn", icon: "i-external" },
+          { label: "原小红书笔记", url: "https://xhslink.cn/o/5QfCfHMVhCc", icon: "i-external" }
+        ]
+      },
+      {
+        id: "hangang-ramen",
+        day: 0,
+        optional: true,
+        time: "夜间想吃",
+        type: "food",
+        icon: "i-ramen",
+        typeLabel: "汉江夜景",
+        name: "CU 서울항점 · 汝矣岛汉江公园",
+        shortName: "汉江泡面",
+        subtitle: "江风、热汤和一杯冬夜拉面",
+        date: "想去",
+        address: "서울 영등포구 여의도한강공원길 231 · 1층",
+        lat: 37.5285,
+        lng: 126.9330,
+        duration: "约 45–60 分钟",
+        description: "在汉江公园的便利店买杯面、鸡蛋和热饮，等面煮开的那几分钟，看江面和对岸的灯一起亮着。不是正式晚餐，是圣诞夜很轻的一小段快乐。",
+        tip: "冬季户外很冷，先确认公园和煮面机开放时间；风大时不要在江边久坐，买完热食回室内或提前回酒店。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/CU%20%EC%84%9C%EC%9A%B8%ED%95%AD%EC%A0%90", icon: "i-pin" },
+          { label: "汉江公园信息", url: "https://english.visitseoul.net/", icon: "i-external" }
+        ]
+      }
+    ];
+
+    const dayExtras = {
+      1: [
+        { time: "12:25", title: "CZ317 北京大兴 → 金浦", note: "09:30 起飞 · 12:25 抵达 · 入境后直接去酒店", tag: "航班" },
+        { time: "14:20", title: "午餐 · 餐厅待定", note: "酒店附近用餐 · 15:35 前结束，再出发去理发", tag: "用餐" }
+      ],
+      2: [
+        { time: "16:45", title: "钟路简餐", note: "剧场附近快速晚餐 · 17:20 前结束，不再加购物点", tag: "用餐" },
+        { time: "17:25", title: "Doosan Art Center 取票", note: "确认中英日韩字幕屏与座位入口 · 18:00 开演", tag: "音乐剧" }
+      ],
+      3: [
+        { time: "14:15", title: "前往 Banobagi", note: "从圣水出发 · 15:00 前到彦州站", tag: "转场" },
+        { time: "18:45", title: "晚餐 · 圣水清淡软食", note: "从 Banobagi 回圣水 · 不饮酒、不辛辣、不吃过烫和难咀嚼食物", tag: "术后用餐" }
+      ]
+    };
+
+    const lunchOptions = [
+      {
+        id: "lunch-chicken",
+        badge: "暖汤",
+        name: "明洞一只鸡 · 명동닭한마리",
+        meta: "종로40가길 14 · VITRO 附近",
+        intro: "清汤鸡锅配年糕和刀削面，三个人分一锅刚好。店在钟路/东大门一侧，离 VITRO 比明洞站更近，吃完再去 Wilson 也顺路。",
+        address: "서울 종로구 종로40가길 14",
+        lat: 37.5703,
+        lng: 127.0004,
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%AA%85%EB%8F%99%EB%8B%AD%ED%95%9C%EB%A7%88%EB%A6%AC" },
+          { label: "菜单与评价", url: "https://www.diningcode.com/profile.php?rid=ortoqvmy8Esl" }
+        ]
+      },
+      {
+        id: "lunch-sirloin",
+        badge: "韩牛",
+        name: "一片里脊 · 일편등심 明洞店",
+        meta: "명동10길 18 · 3층",
+        intro: "1++ 韩牛按部位点，店员代烤，午餐想吃得好一点时选它。位置就在明洞中心，之后走 Wilson 最顺。",
+        address: "서울 중구 명동10길 18 · 3층",
+        lat: 37.5637,
+        lng: 126.9855,
+        links: [
+          { label: "官方预约", url: "https://ilpyeonsirloinmyeongdong.com/" },
+          { label: "CatchTable", url: "https://app.catchtable.co.kr/ct/shop/ilpyeon__myeongdong" },
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%9D%BC%ED%8E%B8%EB%93%B1%EC%8B%AC%20%EB%AA%85%EB%8F%99%EC%A0%90" }
+        ]
+      },
+      {
+        id: "lunch-octopus",
+        badge: "重口下饭",
+        name: "肥牛辣炒章鱼 · 명동낙지",
+        meta: "퇴계로18길 24 · 1층",
+        intro: "辣炒章鱼加肥牛，酱汁浓、很适合配饭；想吃得热闹又下饭就选这家。辣度可以现场先问，避免后面逛街口渴。",
+        address: "서울 중구 퇴계로18길 24 · 1층",
+        lat: 37.5599,
+        lng: 126.9844,
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%AA%85%EB%8F%99%EB%82%99%EC%A7%80" },
+          { label: "菜单与评价", url: "https://www.diningcode.com/profile.php?rid=ZBHNgLDQPDDQ" }
+        ]
+      }
+    ];
+
+    lunchOptions.forEach((option) => {
+      places.push({
+        id: option.id,
+        day: 2,
+        mapOnly: true,
+        pendingChoice: true,
+        time: "13:00",
+        type: "food",
+        icon: "i-utensils",
+        typeLabel: "午餐候选",
+        name: option.name,
+        shortName: option.badge,
+        subtitle: option.meta,
+        date: "12/25 备选",
+        address: option.address,
+        lat: option.lat,
+        lng: option.lng,
+        duration: "约 50 分钟",
+        description: option.intro,
+        tip: "13:00 到店，13:50 前结束，再走去 Wilson 明洞。",
+        links: option.links.map((link) => ({ ...link, icon: link.label.includes("地图") ? "i-pin" : "i-external" }))
+      });
+    });
+
+    const hairOptions = [
+      {
+        id: "hair-born",
+        badge: "首选",
+        name: "B-orn Hair · 狎鸥亭",
+        mapLabel: "B-orn",
+        intro: "离酒店最近，工作室型沙龙；主选 16:00 时段，适合只做剪发和吹整。",
+        address: "서울 강남구 선릉로161길 8 · 3층",
+        lat: 37.5276,
+        lng: 127.0397,
+        detail: "小而精的工作室型沙龙，距离酒店和狎鸥亭 Rodeo 都近，适合只做剪发和吹整。",
+        tip: "16:00 为当前主计划时段，仍以实际预约成功为准。",
+        links: [
+          { label: "Fresha 预约", url: "https://www.fresha.com/a/b-orn-hair-apgujeong-rodeo-seoulteugbyeolsi-664-2-lxm18hao" },
+          { label: "地图", url: "https://map.naver.com/p/search/%EB%B9%84%EC%98%A4%EB%A5%B8%ED%97%A4%EC%96%B4%20%EC%95%95%EA%B5%AC%EC%A0%95%EB%A1%9C%EB%8D%B0%EC%98%A4%EC%A0%90" }
+        ]
+      },
+      {
+        id: "hair-juno",
+        badge: "连锁",
+        name: "Juno Hair · 林荫道",
+        mapLabel: "Juno 林荫道",
+        intro: "成熟连锁，价格和流程相对好理解；适合作为 B-orn 满位时的近距离备选。",
+        address: "서울 강남구 도산대로 127 · 2층",
+        lat: 37.5193,
+        lng: 127.0238,
+        detail: "成熟的连锁沙龙，风格和价格层级较清楚，适合希望稳定完成剪发、又不想在小工作室抢位的人。",
+        tip: "预约时确认指定设计师是否需要额外费用，并避开不能选设计师的优惠套餐。",
+        links: [
+          { label: "分店预约", url: "https://mamedene.com/shops/3024/products" },
+          { label: "官网", url: "https://www.junohair.com/" }
+        ]
+      },
+      {
+        id: "hair-parkjun",
+        badge: "英文友好",
+        name: "Parkjun Beautylab · 清潭",
+        mapLabel: "Parkjun 清潭",
+        intro: "外国客沟通经验更成熟，剪发和头皮护理都可以做；预约时先确认设计师等级和总价。",
+        address: "서울 강남구 삼성로 651 · 3층",
+        lat: 37.5189,
+        lng: 127.0538,
+        detail: "更成熟的游客接待型沙龙，英文沟通和头皮护理是优势。适合把价格、设计师等级和附加项目一次问清。",
+        tip: "先确认剪发是否包含洗发与吹整，以及长发是否另加费用。",
+        links: [
+          { label: "官网", url: "https://parkjun.com/" },
+          { label: "Naver 预约", url: "https://m.booking.naver.com/booking/3/bizes/646512?area=ple" }
+        ]
+      },
+      {
+        id: "hair-chahong",
+        badge: "自然精致",
+        name: "Chahong Room · 清潭",
+        mapLabel: "Chahong 清潭",
+        intro: "韩系自然、低维护的轮廓剪裁，整体更精品化；热门设计师建议提前锁位。",
+        address: "서울 강남구 영동대로 701 · W타워 2층",
+        lat: 37.5193,
+        lng: 127.0539,
+        detail: "偏精品化的韩系沙龙，擅长自然、精致的轮廓和低维护造型，适合希望剪完以后自己也好打理的人。",
+        tip: "热门设计师档期更紧，且常规关门较早，务必提前确认 16:00 是否可约。",
+        links: [
+          { label: "清潭店预约", url: "https://chahongsalon.com/11705-2/" },
+          { label: "地图", url: "https://map.naver.com/p/search/%EC%B0%A8%ED%99%8D%EB%A3%B8%20%EC%B2%AD%EB%8B%B4%EC%A0%90" }
+        ]
+      },
+      {
+        id: "hair-jenny",
+        badge: "艺人感",
+        name: "Jenny House · 清潭",
+        mapLabel: "Jenny House",
+        intro: "妆发完成度高、造型精致，适合想要明显变化或拍照效果；价格和附加项目会更高。",
+        address: "서울 강남구 선릉로146길 56",
+        lat: 37.5248,
+        lng: 127.0478,
+        detail: "艺人感强、妆发完成度高，适合想要明显变化或拍照效果的人，但整体价格和附加项目也会更高。",
+        tip: "确认总监等级、剪发总价和是否包含造型，避免现场增加不必要的护理项目。",
+        links: [
+          { label: "官网", url: "https://www.jennyhouse.co.kr/" },
+          { label: "Naver 预约", url: "https://m.booking.naver.com/booking/3/bizes/140432?area=ple" }
+        ]
+      }
+    ];
+
+    hairOptions
+      .filter((option) => !places.some((place) => place.id === option.id))
+      .forEach((option) => {
+        places.push({
+          id: option.id,
+          day: 1,
+          mapOnly: true,
+          pendingChoice: true,
+          time: "备选",
+          type: "cut",
+          icon: "i-scissors",
+          typeLabel: "理发备选",
+          name: option.name,
+          shortName: option.mapLabel,
+          subtitle: "候选位置 · 尚未确定",
+          date: "备选",
+          address: option.address,
+          lat: option.lat,
+          lng: option.lng,
+          duration: "约 1–1.5 小时",
+          description: option.detail,
+          tip: option.tip,
+          links: option.links
+        });
+      });
+
+    const musicalOptions = [
+      {
+        id: "show-sweeney",
+        badge: "原首选",
+        name: "《Sweeney Todd》",
+        venue: "D-Cube Link Art Center",
+        time: "19:30 · 约 160 分钟",
+        status: "售罄 · 等三开",
+        tone: "wait",
+        mapLabel: "Sweeney",
+        area: "新道林",
+        intro: "最贴近圣诞夜气氛的暗黑大戏。12/25 晚场目前售罄，官方三开与回流监控继续保留。",
+        address: "서울 구로구 경인로 662 · 디큐브 링크아트센터",
+        lat: 37.5088,
+        lng: 126.8896,
+        detail: "Sweeney Todd 仍是这次音乐剧的第一优先。若官方追加开票或出现可购回流票，这个时段会直接切回 Sweeney。",
+        tip: "目前已售罄。不要把它当成已买到；三开/回流出现前，先用下方其他方案作为可执行的备选。",
+        links: [
+          { label: "NOL 官方票务", url: "https://nol.yanolja.com/ticket/products/26014509" }
+        ]
+      },
+      {
+        id: "show-six",
+        badge: "已确认可选",
+        name: "《SIX THE MUSICAL》",
+        venue: "홍익대 대학로 아트센터",
+        time: "17:00 / 20:30 · 80 分钟",
+        status: "12/25 两场可选",
+        tone: "available",
+        mapLabel: "SIX",
+        area: "大学路",
+        intro: "六位王后把历史唱成一场流行演唱会。短、燃、轻，20:30 场最适合把圣水下午完整留出来。",
+        address: "서울특별시 종로구 대학로 57 · 홍익대 대학로 아트센터",
+        lat: 37.5767,
+        lng: 127.0029,
+        detail: "已在 YES24 官方票务页进入 12/25 场次选择，17:00 与 20:30 两场均可选，是当前最容易落地的音乐剧方案。",
+        tip: "20:30 散场后回江南会偏晚；若想把晚餐和移动留得更从容，17:00 场更稳。",
+        links: [
+          { label: "YES24 官方票务", url: "https://ticket.yes24.com/Perf/60484" },
+          { label: "Naver 预约", url: "https://booking.naver.com/booking/12/bizes/1749508" },
+          { label: "演出资料", url: "https://festival.ttpk.co.kr/festivals/PF302744" }
+        ]
+      },
+      {
+        id: "show-doubtfire",
+        badge: "离酒店最近",
+        name: "《Mrs. Doubtfire》",
+        venue: "GS Art Center",
+        time: "14:30 / 19:30 · 175 分钟",
+        status: "首轮开售中",
+        tone: "check",
+        mapLabel: "Mrs. Doubtfire",
+        area: "驿三",
+        intro: "黄政民、郑成华等卡司的百老汇喜剧。GS 艺术中心离 voco 江南最近，19:30 场通勤成本最低。",
+        address: "서울특별시 강남구 논현로 508 · GS아트센터",
+        lat: 37.5019949,
+        lng: 127.0373364,
+        detail: "官方预约页显示首轮开放至 2027/1/10，12/25 周五有 14:30、19:30 两场。具体单日余票需点开票务页确认。",
+        tip: "如果当天不想跨城移动，这是最省体力的一部；175 分钟较长，建议晚餐提前或散场后再吃。",
+        links: [
+          { label: "Naver 预约", url: "https://booking.naver.com/booking/12/bizes/1749684" },
+          { label: "Ticketlink", url: "http://www.ticketlink.co.kr/product/66039" },
+          { label: "演出资料", url: "https://festival.ttpk.co.kr/festivals/PF302677" }
+        ]
+      },
+      {
+        id: "show-two-cities",
+        badge: "大制作",
+        name: "《A Tale of Two Cities》",
+        venue: "광림아트센터 BBCH홀",
+        time: "19:30 · 170 分钟",
+        status: "官方票务已开",
+        tone: "check",
+        mapLabel: "Two Cities",
+        area: "新沙",
+        intro: "申成禄、郑基悦等卡司，古典爱情与革命叙事，舞台规模大。广林艺术中心在新沙，回江南顺路。",
+        address: "서울특별시 강남구 논현로163길 33 · 광림아트센터",
+        lat: 37.5212,
+        lng: 127.0318,
+        detail: "12/25 周五安排为 19:30 晚场，YES24、Naver 预约与 NOL 均已开票；本次未登录取到具体余票数量。",
+        tip: "如果喜欢传统大编制音乐剧、又想留在江南，这一部比去大学路更省移动时间。",
+        links: [
+          { label: "YES24 官方票务", url: "https://ticket.yes24.com/Perf/60128" },
+          { label: "Naver 预约", url: "https://booking.naver.com/booking/12/bizes/1737045" },
+          { label: "演出资料", url: "https://festival.ttpk.co.kr/festivals/PF300974" }
+        ]
+      },
+      {
+        id: "show-let-me-fly",
+        badge: "韩语原创",
+        name: "《Let Me Fly》",
+        venue: "두산아트센터",
+        time: "18:00 · 120 分钟",
+        status: "官方票务已开",
+        tone: "check",
+        mapLabel: "Let Me Fly",
+        area: "钟路",
+        intro: "口碑稳定的韩国原创音乐剧，温柔、怀旧、情绪浓度高。两小时长度最适合担心圣诞晚场太累的一晚。",
+        address: "서울특별시 종로구 종로33길 15 · 두산아트센터",
+        lat: 37.5724,
+        lng: 127.0014,
+        detail: "官方日历显示 12/25 为 14:00、18:00 两场；行程锁定 18:00，并提供中、英、日、韩字幕。",
+        tip: "17:25 前到 Doosan Art Center 取票，入场前确认四语字幕屏视角。",
+        links: [
+          { label: "YES24 官方票务", url: "https://ticket.yes24.com/Perf/59852" },
+          { label: "Naver 预约", url: "https://booking.naver.com/booking/12/bizes/1724383" },
+          { label: "演出资料", url: "https://festival.ttpk.co.kr/festivals/PF299346" }
+        ]
+      },
+      {
+        id: "show-romeo",
+        badge: "偶像卡司",
+        name: "《Romeo and Juliet》",
+        venue: "한전아트센터",
+        time: "19:30 · 150 分钟",
+        status: "官方票务已开",
+        tone: "check",
+        mapLabel: "Romeo & Juliet",
+        area: "瑞草",
+        intro: "南优贤、河成云等卡司的法式流行音乐剧，视觉和歌曲更抓耳，适合喜欢舞台感与明星卡司的人。",
+        address: "서울특별시 서초구 효령로72길 60 · 한전아트센터",
+        lat: 37.4938,
+        lng: 127.0068,
+        detail: "12/25 周五为 19:30 晚场，YES24、Naver 预约与 Ticketlink 已开票。法语流行旋律与偶像卡司是主要卖点。",
+        tip: "如果同行的人更想看熟悉的爱情故事、又喜欢现场乐队感，可以把它放在 SIX 后作为第二选择。",
+        links: [
+          { label: "YES24 官方票务", url: "https://ticket.yes24.com/Perf/60933" },
+          { label: "Naver 预约", url: "https://booking.naver.com/booking/12/bizes/1770516" },
+          { label: "演出资料", url: "https://festival.ttpk.co.kr/festivals/PF305670" }
+        ]
+      }
+    ];
+
+    const outdoorFilters = [
+      { id: "all", label: "全部" },
+      { id: "arcteryx", label: "始祖鸟" },
+      { id: "osprey", label: "Osprey" },
+      { id: "bags", label: "背包 / 轻量" },
+      { id: "collection", label: "集合店" },
+      { id: "discount", label: "折扣优先" }
+    ];
+
+    const outdoorOptions = [
+      {
+        id: "ace",
+        badge: "先扫全",
+        name: "Ace Outdoor 钟路",
+        meta: "钟路 224-1 · 2F",
+        filters: ["all", "arcteryx", "osprey", "bags", "collection", "discount"],
+        brands: ["始祖鸟", "Osprey", "K2", "Gregory"],
+        intro: "大型集合店，品牌跨度最广。先快速扫始祖鸟、Osprey、K2 和露营线，再决定后面重点去哪家。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%97%90%EC%9D%B4%EC%8A%A4%EC%95%84%EC%9B%83%EB%8F%84%EC%96%B4%20%EC%A2%85%EB%A1%9C" }
+        ]
+      },
+      {
+        id: "mygear",
+        badge: "背包集中",
+        name: "My Gear 钟路直营店",
+        meta: "钟路40가길 46 · 3F",
+        filters: ["all", "arcteryx", "osprey", "bags", "collection"],
+        brands: ["始祖鸟", "Osprey", "Gregory", "Mystery Ranch"],
+        intro: "背包、配件和轻量化装备更集中。适合带着型号清单来比较背负、容量和实际到手价。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%A7%88%EC%9D%B4%EA%B8%B0%EC%96%B4%20%EC%A2%85%EB%A1%9C%EC%A7%81%EC%98%81%EC%A0%90" }
+        ]
+      },
+      {
+        id: "fivega",
+        badge: "比价候选",
+        name: "5ga Gear 钟路",
+        meta: "钟路34길 13 · 1F",
+        filters: ["all", "arcteryx", "bags", "collection", "discount"],
+        brands: ["始祖鸟", "K2", "Petzl"],
+        intro: "价格比较型集合店。能看到始祖鸟、K2 和部分技术装备；不玩攀岩就重点看服装、背包与配件。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/5%EA%B0%80%EA%B8%B0%EC%96%B4%20%EC%A2%85%EB%A1%9C" }
+        ]
+      },
+      {
+        id: "osprey-jongno",
+        badge: "Osprey 专门",
+        name: "Trailhead 钟路5街",
+        meta: "동호로38길 24 · 1F",
+        filters: ["all", "osprey", "bags"],
+        brands: ["Osprey"],
+        intro: "只把 Osprey 作为主角的补逛点。适合确认圣水没看到的颜色、配件和最终购买型号。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%ED%8A%B8%EB%A0%88%EC%9D%BC%ED%97%A4%EB%93%9C%20%EC%A2%85%EB%A1%9C5%EA%B0%80%EC%A0%90" },
+          { label: "Osprey 韩国", url: "https://www.osprey.com/kr/ko" }
+        ]
+      }
+    ];
+
+    const wilsonTargets = [
+      {
+        id: "clash-custom",
+        badge: "想买 01",
+        name: "Clash 100L v3 · 银色定制",
+        meta: "280g · 100in² · 冰蓝线",
+        note: "目标是银色拍框、Ice Blue 线、花朵 emoji。先在 VITRO 比标准拍和穿线价格，再到 Wilson 明洞问韩国定制流程。",
+        swatches: ["#d8dde0", "#9fd5e6"],
+        url: "https://www.xiaohongshu.com/discovery/item/6ae718e8000000001802631a?xsec_source=app_share&xsec_token=CBK-ZprPHdb_-kTBXCcluDTiNnqyKIGb8_-JzabdCQJaw="
+      },
+      {
+        id: "yellow-bag",
+        badge: "想买 02",
+        name: "韩国限定 · 小鸡黄网球包",
+        meta: "奶黄色 · 双肩包",
+        note: "颜色比型号更关键。先在 Wilson 明洞出示笔记图片问库存；没有货再让店员查江南新世界库存或调货。",
+        swatches: ["#f4dc7c", "#e8c748"],
+        url: "https://www.xiaohongshu.com/discovery/item/6af01abc0000000015015575?xsec_source=app_share&xsec_token=CBO0_s7ac_mZcX16ejwHHni8UYTMkdAWOIm-SQ1ICu08k="
+      }
+    ];
+
+    const wilsonStores = [
+      {
+        id: "vitro-tennis",
+        badge: "12:05 先比价",
+        name: "VITRO 网球店",
+        meta: "东大门历史文化公园站 8 号口附近",
+        status: "标准拍 / 穿线比价",
+        intro: "先看标准 Clash 与冰蓝线价格，问清赠品、退税和现场穿线时间，再决定去 Wilson 买哪一件。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/VITRO%20%ED%85%8C%EB%8B%88%EC%8A%A4%20%EB%8F%99%EB%8C%80%EB%AC%B8" }
+        ]
+      },
+      {
+        id: "wilson",
+        badge: "14:00 目标款",
+        name: "Wilson 明洞旗舰店",
+        meta: "명동길 20",
+        status: "限制款 / 定制主店",
+        intro: "带着 VITRO 的价格与判断来明洞，集中问黄色球包、银色 Clash 定制和冰蓝线。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%9C%8C%EC%8A%A8%20%EB%AA%85%EB%8F%99%20%EC%A7%81%EC%98%81%EC%A0%90" }
+        ]
+      },
+      {
+        id: "wilson-gangnam",
+        badge: "缺货再补",
+        name: "Wilson 新世界江南 8F",
+        meta: "신반포로 176 · 8F",
+        status: "库存 / 调货备选",
+        intro: "如果明洞没有指定球包或拍子，再让店员查江南库存。这里离酒店近，但不建议专程首站去。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%9C%8C%EC%8A%A8%20%EC%8B%A0%EC%84%B8%EA%B3%84%EB%B0%B1%ED%99%94%EC%A0%90%20%EA%B0%95%EB%82%A8%EC%A0%90" }
+        ]
+      }
+    ];
+
+    const xmasSpots = [
+      {
+        placeId: "coex-library",
+        image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=82",
+        status: "已排入 12/24",
+        area: "三成",
+        title: "COEX 星光图书馆",
+        note: "11 月中旬起换上圣诞布置；巨型圣诞树配整面书墙，室内拍照不怕冷。"
+      },
+      {
+        placeId: "shinsegae-lights",
+        image: "https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&w=1200&q=82",
+        status: "已排入 12/26",
+        area: "明洞",
+        title: "新世界百货灯光秀",
+        note: "每天约 17:30 点灯，整栋百货变成圣诞投影；从 Wilson 出来正好接上。"
+      },
+      {
+        placeId: "gwanghwamun-market",
+        image: "https://images.unsplash.com/photo-1512389142860-9c449e58a543?auto=format&fit=crop&w=1200&q=82",
+        status: "已排入 12/26",
+        area: "光化门",
+        title: "光化门圣诞市集",
+        note: "大圣诞树、摊位和热饮，把傍晚的节日气氛拉满。"
+      },
+      {
+        placeId: "cheonggyecheon",
+        image: "https://images.unsplash.com/photo-1482517967863-00e15c9b44be?auto=format&fit=crop&w=1200&q=82",
+        status: "已排入 12/26",
+        area: "钟阁",
+        title: "首尔灯节 · 清溪川",
+        note: "攻略标注 2026.12.11–2027.1.31，18:00–23:00；和光化门市集可以连着走。"
+      },
+      {
+        placeId: "lotte-world",
+        image: "https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=1200&q=82",
+        status: "乐园型备选",
+        area: "蚕室",
+        title: "乐天世界「奇迹冬季」",
+        note: "圣诞集市、城堡灯光和室内园区，适合愿意留半天并购买门票时选择。"
+      },
+      {
+        placeId: "seokchon-lake",
+        image: "https://images.unsplash.com/photo-1483664852095-d6cc6870702d?auto=format&fit=crop&w=1200&q=82",
+        status: "与乐天二选一",
+        area: "蚕室",
+        title: "石村湖光雕节",
+        note: "湖畔光雕免费开放，适合接在乐天世界之后；不去乐园也可以只走湖区。"
+      },
+      {
+        placeId: "hyundai-seoul",
+        image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=82",
+        status: "室内备选",
+        area: "汝矣岛",
+        title: "The Hyundai Seoul 圣诞村",
+        note: "整层圣诞布置、逛吃一体；适合和汝矣岛水芹菜汤饭、汉江泡面组合。"
+      },
+      {
+        placeId: "namsan-tower",
+        image: "https://images.unsplash.com/photo-1548115184-bc6544d06a58?auto=format&fit=crop&w=1200&q=82",
+        status: "体力备选",
+        area: "明洞",
+        title: "南山塔夜景",
+        note: "冬季约 17:00 上山，能同时看到白天和亮灯后的首尔；需要额外留 2 小时。"
+      }
+    ];
+
+    const extraXmasPlaces = [
+      {
+        id: "lotte-world",
+        day: 0,
+        mapOnly: true,
+        time: "备选半日",
+        type: "event",
+        icon: "i-christmas",
+        image: "https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=1200&q=82",
+        typeLabel: "圣诞乐园",
+        name: "乐天世界「奇迹冬季」",
+        shortName: "乐天世界",
+        subtitle: "城堡灯光、巡游和室内游乐设施",
+        date: "圣诞备选",
+        address: "서울 송파구 올림픽로 240 · 롯데월드 어드벤처",
+        lat: 37.5111,
+        lng: 127.0982,
+        duration: "建议留 3–5 小时",
+        description: "如果想把圣诞夜过得更像童话，可以买票进入乐天世界冒险乐园。冬季的城堡、巡游与灯饰会一起变成大型圣诞场景，室内项目也能避开低温。",
+        tip: "需要门票，热门日期建议提前买票并确认巡游时间。若只想拍照和散步，旁边的石村湖更轻，不需要为乐园留半天。",
+        links: [
+          { label: "官方票务与信息", url: "https://adventure.lotteworld.com/", icon: "i-external" },
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%A1%AF%EB%8D%B0%EC%9B%94%EB%93%9C", icon: "i-pin" }
+        ]
+      },
+      {
+        id: "seokchon-lake",
+        day: 0,
+        mapOnly: true,
+        time: "傍晚",
+        type: "event",
+        icon: "i-christmas",
+        image: "https://images.unsplash.com/photo-1483664852095-d6cc6870702d?auto=format&fit=crop&w=1200&q=82",
+        typeLabel: "湖畔灯景",
+        name: "石村湖光雕节",
+        shortName: "石村湖",
+        subtitle: "沿湖灯串、倒影和乐天塔夜景",
+        date: "圣诞备选",
+        address: "서울 송파구 잠실동 · 석촌호수",
+        lat: 37.5086,
+        lng: 127.1015,
+        duration: "约 45–75 分钟",
+        description: "石村湖的冬季灯饰沿着湖岸展开，水面会把树灯和乐天塔的轮廓一起拉长。它比乐园轻很多，适合只想在冷空气里慢慢走一圈。",
+        tip: "免费开放，但冬季湖边风大。和乐天世界二选一即可，不建议同一天两个都排满。",
+        links: [
+          { label: "Visit Seoul", url: "https://english.visitseoul.net/", icon: "i-external" },
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%84%9D%EC%B4%8C%ED%98%B8%EC%88%98", icon: "i-pin" }
+        ]
+      },
+      {
+        id: "hyundai-seoul",
+        day: 0,
+        mapOnly: true,
+        time: "室内备选",
+        type: "event",
+        icon: "i-christmas",
+        image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=82",
+        typeLabel: "室内圣诞",
+        name: "The Hyundai Seoul 圣诞村",
+        shortName: "The Hyundai",
+        subtitle: "汝矣岛室内圣诞装置与逛吃",
+        date: "圣诞备选",
+        address: "서울 영등포구 여의대로 108 · 더현대 서울",
+        lat: 37.5258,
+        lng: 126.9281,
+        duration: "约 1–2 小时",
+        description: "整座商场会换上冬季与圣诞装置，适合天气太冷、下雨或想逛街时切到室内。可以和汝矣岛汉江泡面安排在同一条线上。",
+        tip: "节假日人多，先看官方账号确认当年的装置楼层与开放时间；用餐高峰建议避开 12:00–13:00 和 18:00–19:00。",
+        links: [
+          { label: "The Hyundai", url: "https://www.thehyundai.com/", icon: "i-external" },
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%8D%94%ED%98%84%EB%8C%80%20%EC%84%9C%EC%9A%B8", icon: "i-pin" }
+        ]
+      },
+      {
+        id: "namsan-tower",
+        day: 0,
+        mapOnly: true,
+        time: "17:00 上山",
+        type: "event",
+        icon: "i-christmas",
+        image: "https://images.unsplash.com/photo-1548115184-bc6544d06a58?auto=format&fit=crop&w=1200&q=82",
+        typeLabel: "夜景备选",
+        name: "南山首尔塔夜景",
+        shortName: "南山塔",
+        subtitle: "从蓝调时刻看到首尔全面亮灯",
+        date: "圣诞备选",
+        address: "서울 용산구 남산공원길 105 · N서울타워",
+        lat: 37.5512,
+        lng: 126.9882,
+        duration: "约 2 小时",
+        description: "傍晚上山，先看首尔从灰蓝色过渡到金色灯海。圣诞灯饰、塔身灯光和城市夜景叠在一起，是比商场更有城市感的一站。",
+        tip: "需要额外留出排队和上下山时间；如果当天已经走了钟路与明洞，体力不足时优先放弃，不硬塞。",
+        links: [
+          { label: "N Seoul Tower", url: "https://www.nseoultower.co.kr/eng/", icon: "i-external" },
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%82%A8%EC%82%B0%20%EC%84%9C%EC%9A%B8%ED%83%80%EC%9B%8C", icon: "i-pin" }
+        ]
+      }
+    ];
+
+    extraXmasPlaces.forEach((place) => {
+      if (!places.some((existing) => existing.id === place.id)) places.push(place);
+    });
+
+    const iconByType = {
+      hotel: "i-bed",
+      cut: "i-scissors",
+      shop: "i-shopping",
+      show: "i-theater",
+      food: "i-utensils",
+      event: "i-christmas"
+    };
+
+    const markersLayer = document.getElementById("markersLayer");
+    const timelineScroll = document.getElementById("timelineScroll");
+    const detailPanel = document.getElementById("detailPanel");
+    const detailContent = document.getElementById("detailContent");
+    const mapViewport = document.getElementById("mapViewport");
+    const mapStage = document.getElementById("mapStage");
+    const mapShell = document.querySelector(".map-shell");
+    const tileLayer = document.getElementById("tileLayer");
+    const routeOverlay = document.getElementById("routeOverlay");
+    const zoomLevel = document.getElementById("zoomLevel");
+    const mapTitleText = document.querySelector(".map-title-chip span");
+    const mapAttribution = document.querySelector(".map-attribution");
+    const TILE_SIZE = 256;
+    const MIN_ZOOM = 10;
+    const MAX_ZOOM = 16;
+    const tileCache = new Set();
+    const tileProviders = [
+      {
+        id: "esri-topo",
+        name: "Esri Topographic",
+        attribution: "Tiles © Esri",
+        attributionUrl: "https://www.esri.com/en-us/legal/terms/full-master-agreement",
+        url: (z, x, y) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}`
+      },
+      {
+        id: "osm-de",
+        name: "OpenStreetMap Germany",
+        attribution: "© OpenStreetMap contributors · OSM Germany",
+        attributionUrl: "https://www.openstreetmap.org/copyright",
+        url: (z, x, y) => `https://tile.openstreetmap.de/${z}/${x}/${y}.png`
+      },
+      {
+        id: "osm-fr-hot",
+        name: "OpenStreetMap France HOT",
+        attribution: "© OpenStreetMap contributors · HOT",
+        attributionUrl: "https://www.openstreetmap.org/copyright",
+        url: (z, x, y) => `https://a.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png`
+      },
+      {
+        id: "osm-fr",
+        name: "OpenStreetMap France",
+        attribution: "© OpenStreetMap contributors · OSM France",
+        attributionUrl: "https://www.openstreetmap.org/copyright",
+        url: (z, x, y) => `https://a.tile.openstreetmap.fr/osmfr/${z}/${x}/${y}.png`
+      }
+    ];
+    const mapState = {
+      centerLat: 37.542,
+      centerLng: 126.995,
+      zoom: 12,
+      tileProviderIndex: 0,
+      initialized: false
+    };
+
+    let activeDay = "all";
+    let activePlaceId = null;
+    let isDragging = false;
+    let dragMoved = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+    let pinchStartDistance = 0;
+    let wheelLocked = false;
+    let providerSwitchLock = false;
+
+    function markerGlyph(place) {
+      if (place.type === "shop") return "i-shopping";
+      if (place.type === "event") return "i-christmas";
+      return place.icon || iconByType[place.type] || "i-pin";
+    }
+
+    function renderMarkers() {
+      markersLayer.innerHTML = places.filter((place) => !place.scheduleOnly).map((place) => `
+        <button
+          class="map-marker ${place.type === "hotel" ? "hotel" : "day-" + place.day} ${place.type === "shop" || place.type === "show" || place.type === "event" ? place.type : ""} ${place.pendingChoice ? "choice-pending" : ""}"
+          type="button"
+          style="left:50%;top:50%"
+          data-place-id="${place.id}"
+          data-day="${place.day}"
+          aria-label="${place.shortName}，${place.time}，${place.typeLabel}"
+          title="${place.shortName} · ${place.typeLabel}"
+          aria-pressed="false"
+        >
+          <span class="marker-glyph">
+            <svg aria-hidden="true"><use href="#${markerGlyph(place)}"></use></svg>
+          </span>
+          <span class="marker-index">${place.shortName}</span>
+        </button>
+      `).join("");
+    }
+
+    function renderTimeline() {
+      const hairOptionsMarkup = hairOptions.map((option) => `
+        <article class="hair-option">
+          <button class="hair-option-map-button" type="button" data-place-id="${option.id}">
+            <span class="hair-option-top">
+              <span class="hair-option-badge">${option.badge}</span>
+              <strong class="hair-option-name">${option.name}</strong>
+            </span>
+            <span class="hair-option-intro">${option.intro}</span>
+            <span class="hair-option-map-hint">
+              <svg aria-hidden="true"><use href="#i-pin"></use></svg>在地图查看位置
+            </span>
+          </button>
+          <div class="hair-option-links">
+            ${option.links.map((link) => `
+              <a href="${link.url}" target="_blank" rel="noopener noreferrer">
+                <svg aria-hidden="true"><use href="#i-external"></use></svg>${link.label}
+              </a>
+            `).join("")}
+          </div>
+        </article>
+      `).join("");
+
+      const lunchOptionsMarkup = lunchOptions.map((option) => `
+        <article class="hair-option">
+          <button class="hair-option-map-button" type="button" data-place-id="${option.id}">
+            <span class="hair-option-top">
+              <span class="hair-option-badge">${option.badge}</span>
+              <strong class="hair-option-name">${option.name}</strong>
+            </span>
+            <span class="hair-option-meta">${option.meta}</span>
+            <span class="hair-option-intro">${option.intro}</span>
+            <span class="hair-option-map-hint">
+              <svg aria-hidden="true"><use href="#i-pin"></use></svg>在地图查看位置
+            </span>
+          </button>
+          <div class="hair-option-links">
+            ${option.links.map((link) => `
+              <a href="${link.url}" target="_blank" rel="noopener noreferrer">
+                <svg aria-hidden="true"><use href="#i-external"></use></svg>${link.label}
+              </a>
+            `).join("")}
+          </div>
+        </article>
+      `).join("");
+
+      const outdoorFiltersMarkup = outdoorFilters.map((filter) => {
+        const count = outdoorOptions.filter((option) => option.filters.includes(filter.id)).length;
+        return `
+          <button
+            class="shop-filter-chip"
+            type="button"
+            data-shop-filter="${filter.id}"
+            aria-pressed="${filter.id === "all" ? "true" : "false"}"
+          >${filter.label} · ${count}</button>
+        `;
+      }).join("");
+
+      const outdoorOptionsMarkup = outdoorOptions.map((option) => `
+        <article class="hair-option outdoor-option" data-outdoor-option="${option.id}" data-shop-tags="${option.filters.join(" ")}">
+          <button class="hair-option-map-button outdoor-option-map-button" type="button" data-place-id="${option.id}">
+            <span class="hair-option-top">
+              <span class="hair-option-badge">${option.badge}</span>
+              <strong class="hair-option-name">${option.name}</strong>
+            </span>
+            <span class="musical-option-meta">${option.meta}</span>
+            <span class="shop-brand-row">
+              ${option.brands.map((brand) => `<span class="shop-brand-pill">${brand}</span>`).join("")}
+            </span>
+            <span class="hair-option-intro">${option.intro}</span>
+            <span class="hair-option-map-hint">
+              <svg aria-hidden="true"><use href="#i-pin"></use></svg>钟路 · 在地图查看店铺
+            </span>
+          </button>
+          <div class="hair-option-links">
+            ${option.links.map((link) => `
+              <a href="${link.url}" target="_blank" rel="noopener noreferrer">
+                <svg aria-hidden="true"><use href="#i-external"></use></svg>${link.label}
+              </a>
+            `).join("")}
+          </div>
+        </article>
+      `).join("");
+
+      const wilsonTargetsMarkup = wilsonTargets.map((target) => `
+        <li class="wilson-check-item">
+          <input class="wilson-check-input" id="wilson-check-${target.id}" type="checkbox" aria-label="勾选${target.name}">
+          <label class="wilson-check-copy" for="wilson-check-${target.id}">
+            <strong>${target.badge} · ${target.name}</strong>
+            <small>${target.meta}</small>
+            <span class="wilson-swatches" aria-label="目标颜色">
+              ${target.swatches.map((color) => `<span class="wilson-swatch" style="background:${color}"></span>`).join("")}
+            </span>
+            <p>${target.note}</p>
+          </label>
+          <a class="wilson-note-link" href="${target.url}" target="_blank" rel="noopener noreferrer">
+            <svg aria-hidden="true"><use href="#i-book-open"></use></svg>小红书
+          </a>
+        </li>
+      `).join("");
+
+      const wilsonStoresMarkup = wilsonStores.map((store) => `
+        <article class="hair-option wilson-store-option">
+          <button class="hair-option-map-button" type="button" data-place-id="${store.id}">
+            <span class="hair-option-top">
+              <span class="hair-option-badge">${store.badge}</span>
+              <strong class="hair-option-name">${store.name}</strong>
+            </span>
+            <span class="musical-option-status check">${store.status}</span>
+            <span class="musical-option-meta">${store.meta}</span>
+            <span class="hair-option-intro">${store.intro}</span>
+            <span class="hair-option-map-hint">
+              <svg aria-hidden="true"><use href="#i-pin"></use></svg>在地图查看店铺
+            </span>
+          </button>
+          <div class="hair-option-links">
+            ${store.links.map((link) => `
+              <a href="${link.url}" target="_blank" rel="noopener noreferrer">
+                <svg aria-hidden="true"><use href="#i-external"></use></svg>${link.label}
+              </a>
+            `).join("")}
+          </div>
+        </article>
+      `).join("");
+
+      const groups = [1, 2, 3].map((day) => {
+        const dayPlaces = places.filter((place) => place.day === day && !place.mapOnly);
+        const extras = dayExtras[day] || [];
+        const entries = [
+          ...dayPlaces.map((place) => ({ kind: "place", time: place.time, place })),
+          ...extras.map((extra) => ({ kind: "extra", ...extra }))
+        ].sort((a, b) => timeRank(a.time) - timeRank(b.time));
+
+        return `
+          <section class="day-group" data-day-group="${day}" ${activeDay !== "all" && Number(activeDay) !== day ? "hidden" : ""}>
+            <header class="day-group-head">
+              <div class="day-date">
+                <span class="day-number">${dayMeta[day].date.replace("12月", "").replace("日", "")}</span>
+                <span class="day-week">${dayMeta[day].weekday}</span>
+              </div>
+            </header>
+            <ol class="timeline">
+              ${entries.map((entry) => entry.kind === "extra" ? `
+                <li class="timeline-item">
+                  <span class="timeline-dot rest"></span>
+                  <div class="rest-card">
+                    <strong>${entry.title}</strong>
+                    <span>${entry.time} · ${entry.note}</span>
+                  </div>
+                </li>
+              ` : `
+                <li class="timeline-item">
+                  <span class="timeline-dot"></span>
+                  <button class="timeline-button" type="button" data-place-id="${entry.place.id}">
+                    <span class="time-line">
+                      <span class="time">${entry.place.time}</span>
+                      <span class="mini-tag">${entry.place.typeLabel}</span>
+                    </span>
+                    <span class="timeline-name">${entry.place.shortName}</span>
+                    <span class="timeline-note">${entry.place.subtitle}</span>
+                  </button>
+                  ${entry.place.id === "hair-slot" ? `
+                    <section class="hair-board" aria-label="理发备选">
+                      <div class="hair-board-head">
+                        <strong>16:00 理发 · 5 选 1</strong>
+                        <span>横滑查看</span>
+                      </div>
+                      <p class="hair-board-note">都还没最终确定；先比较位置、风格和预约方式。</p>
+                      <div class="hair-option-list">${hairOptionsMarkup}</div>
+                    </section>
+                  ` : ""}
+                  ${entry.place.id === "lunch-slot" ? `
+                    <section class="hair-board" aria-label="明洞午餐备选">
+                      <div class="hair-board-head">
+                        <strong>13:00 明洞午餐 · 3 选 1</strong>
+                        <span>横滑挑选</span>
+                      </div>
+                      <p class="hair-board-note">VITRO 后先吃饭，13:50 结束，14:00 到 Wilson。点卡片可看位置和预约。</p>
+                      <div class="hair-option-list">${lunchOptionsMarkup}</div>
+                    </section>
+                  ` : ""}
+                  ${entry.place.id === "outdoor-slot" ? `
+                    <section class="hair-board outdoor-board" aria-label="钟路户外店筛选">
+                      <div class="hair-board-head">
+                        <strong>钟路户外店 · 4 家</strong>
+                        <span>先筛选再横滑</span>
+                      </div>
+                      <p class="hair-board-note">按真实需求缩短清单：看始祖鸟、找 Osprey、比背包，还是优先折扣。选两家逛通常就够。</p>
+                      <div class="shop-filter-bar" aria-label="筛选户外店">
+                        ${outdoorFiltersMarkup}
+                      </div>
+                      <div class="hair-option-list" id="outdoorOptionList">${outdoorOptionsMarkup}</div>
+                      <p class="shop-filter-empty" id="outdoorFilterEmpty" hidden>这个筛选下暂时没有店铺。</p>
+                    </section>
+                  ` : ""}
+                </li>
+              `).join("")}
+            </ol>
+            ${day === 2 ? `
+              <div class="transport-strip">
+                <span class="route-note"><svg aria-hidden="true"><use href="#i-route"></use></svg>18:00《Let Me Fly》</span><br>
+                13:00 在明洞吃饭，14:00 逛 Wilson，14:55 开始圣诞灯路线；16:45 吃简餐，17:25 到剧场取票。
+              </div>
+            ` : ""}
+          </section>
+        `;
+      }).join("");
+
+      const restaurantCards = places
+        .filter((place) => place.optional)
+        .map((place) => `
+          <button class="restaurant-card" type="button" data-place-id="${place.id}">
+            <span class="restaurant-icon">
+              <svg aria-hidden="true"><use href="#${place.icon}"></use></svg>
+            </span>
+            <span>
+              <strong>${place.shortName}</strong>
+              <small>${place.subtitle}</small>
+            </span>
+            <span class="card-arrow" aria-hidden="true">›</span>
+          </button>
+        `).join("");
+
+      const xmasCards = xmasSpots.map((spot) => {
+        const content = `
+          <span class="xmas-card-media">
+            <img src="${spot.image}" alt="${spot.title}" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+          </span>
+          <span class="xmas-card-body">
+            <span class="xmas-card-top">
+              <span class="xmas-card-status">${spot.status}</span>
+              <span class="xmas-card-area">${spot.area}</span>
+            </span>
+            <strong>${spot.title}</strong>
+            <p>${spot.note}</p>
+            <span class="xmas-card-cta">
+              <svg aria-hidden="true"><use href="#i-external"></use></svg>查看图片与链接
+            </span>
+          </span>
+        `;
+        return `<button class="xmas-card" type="button" data-place-id="${spot.placeId}">${content}</button>`;
+      }).join("");
+
+      timelineScroll.innerHTML = `
+        <section class="sidebar-head section-target" id="itineraryBoard" aria-labelledby="itineraryBoardTitle">
+          <div class="section-kicker">
+            <h2 class="section-title" id="itineraryBoardTitle">三日行程</h2>
+            <span class="countdown" id="tripCountdown">—</span>
+          </div>
+          <div class="day-tabs" aria-label="按日期筛选地图">
+            <button class="day-tab" type="button" data-day="all" aria-pressed="true">全部<small id="allPlaceCount">${places.filter((place) => !place.scheduleOnly).length} 地点</small></button>
+            <button class="day-tab" type="button" data-day="1" aria-pressed="false">24<small>周四</small></button>
+            <button class="day-tab" type="button" data-day="2" aria-pressed="false">25<small>周五</small></button>
+            <button class="day-tab" type="button" data-day="3" aria-pressed="false">26<small>周六</small></button>
+          </div>
+        </section>
+        ${groups}
+        <section class="wilson-board section-target" id="wilsonBoard" aria-labelledby="wilsonBoardTitle">
+          <div class="restaurant-board-head">
+            <h3 id="wilsonBoardTitle">网球装备采购｜Wilson</h3>
+            <span>Wishlist 2</span>
+          </div>
+          <p class="restaurant-board-note">12/25 12:05 先到 VITRO 比价，结束后在明洞自由觅食，14:00 再到 Wilson 确认两件目标款；14:50 左右接圣诞灯路线。</p>
+          <ul class="wilson-checklist">${wilsonTargetsMarkup}</ul>
+          <div class="hair-board-head wilson-store-head">
+            <strong>购买顺序 · 3 家</strong>
+            <span>横滑查看</span>
+          </div>
+          <p class="hair-board-note">按时间顺序：VITRO 比标准拍与穿线 → Wilson 明洞查限定与定制 → 江南新世界只在缺货时补查。</p>
+          <div class="hair-option-list">${wilsonStoresMarkup}</div>
+        </section>
+        <section class="xmas-board section-target" id="xmasBoard" aria-labelledby="xmasBoardTitle">
+          <div class="xmas-board-head">
+            <h3 id="xmasBoardTitle">圣诞限定｜8 个打卡点</h3>
+            <span>横滑查看</span>
+          </div>
+          <p class="xmas-board-note">点开任一卡片可看大图、氛围说明与官方链接；前四个已进动线，其余按天气和体力替换。</p>
+          <div class="xmas-card-list">${xmasCards}</div>
+        </section>
+        <section class="restaurant-board section-target" id="restaurantBoard" aria-labelledby="restaurantBoardTitle">
+          <div class="restaurant-board-head">
+            <h3 id="restaurantBoardTitle">想吃清单</h3>
+            <span>3 Picks</span>
+          </div>
+          <p class="restaurant-board-note">水芹菜汤饭已排进 25 日圣水午餐；韩美屋和汉江泡面保留为候选，按当天动线决定。</p>
+          <div class="restaurant-card-list">${restaurantCards}</div>
+        </section>
+        <div class="summary-note" style="padding:16px 8px 0">
+          <strong>12/27 · CZ318 金浦 → 北京大兴</strong><br>
+          13:30 起飞 · 15:00 抵达。建议 11:15 前从江南酒店出发，当天不再加购物点。
+        </div>
+        <footer class="trip-footer">
+          <h2>这版的节奏</h2>
+          <p>24 日理发送达，25 日留给完整钟路和 18:00《Let Me Fly》，26 日上午在圣水购物、下午去 Banobagi。医美后只回圣水吃清淡晚餐，不再加夜间打卡。</p>
+        </footer>
+      `;
+    }
+
+    function applyOutdoorFilter(filterId) {
+      const filterButtons = document.querySelectorAll("[data-shop-filter]");
+      const optionCards = document.querySelectorAll("[data-outdoor-option]");
+      const optionList = document.getElementById("outdoorOptionList");
+      const emptyState = document.getElementById("outdoorFilterEmpty");
+      let visibleCount = 0;
+
+      filterButtons.forEach((button) => {
+        button.setAttribute("aria-pressed", button.dataset.shopFilter === filterId ? "true" : "false");
+      });
+
+      optionCards.forEach((card) => {
+        const isVisible = card.dataset.shopTags.split(" ").includes(filterId);
+        card.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+      });
+
+      if (emptyState) emptyState.hidden = visibleCount > 0;
+      if (optionList) optionList.scrollTo({ left: 0, behavior: "smooth" });
+      const activeOutdoorCard = activePlaceId
+        ? Array.from(optionCards).find((card) => card.dataset.outdoorOption === activePlaceId)
+        : null;
+      if (activeOutdoorCard?.hidden) {
+        closeDetail();
+      }
+    }
+
+    function timeRank(value) {
+      const aliases = {
+        "上午": "09:00",
+        "中午": "12:00",
+        "下午": "14:00",
+        "傍晚": "17:00",
+        "晚上": "20:00"
+      };
+      const normalized = aliases[value] || value;
+      const match = /^(\d{1,2}):(\d{2})$/.exec(normalized);
+      return match ? Number(match[1]) * 60 + Number(match[2]) : 9999;
+    }
+
+    function project(lat, lng, zoom) {
+      const worldSize = TILE_SIZE * Math.pow(2, zoom);
+      const clampedLat = Math.max(-85.0511, Math.min(85.0511, lat));
+      const sinLat = Math.sin(clampedLat * Math.PI / 180);
+      return {
+        x: (lng + 180) / 360 * worldSize,
+        y: (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * worldSize,
+        worldSize
+      };
+    }
+
+    function unproject(x, y, zoom) {
+      const worldSize = TILE_SIZE * Math.pow(2, zoom);
+      const lng = x / worldSize * 360 - 180;
+      const n = Math.PI - 2 * Math.PI * y / worldSize;
+      const lat = 180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+      return { lat, lng };
+    }
+
+    function activePlacesForFit(day = activeDay) {
+      if (day === "all") return places.filter((place) => !place.scheduleOnly);
+      return places.filter((place) => !place.scheduleOnly && (String(place.day) === String(day) || place.id === "voco"));
+    }
+
+    function fitMapToPlaces(day = activeDay) {
+      const rect = mapViewport.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const selected = activePlacesForFit(day);
+      let chosenZoom = MIN_ZOOM;
+      const horizontalRoom = Math.max(180, rect.width - (window.innerWidth <= 760 ? 42 : 86));
+      const verticalRoom = Math.max(220, rect.height - (window.innerWidth <= 760 ? 130 : 150));
+
+      for (let z = MIN_ZOOM; z <= MAX_ZOOM; z += 1) {
+        const projected = selected.map((place) => project(place.lat, place.lng, z));
+        const minX = Math.min(...projected.map((point) => point.x));
+        const maxX = Math.max(...projected.map((point) => point.x));
+        const minY = Math.min(...projected.map((point) => point.y));
+        const maxY = Math.max(...projected.map((point) => point.y));
+        if (maxX - minX <= horizontalRoom && maxY - minY <= verticalRoom) {
+          chosenZoom = z;
+        }
+      }
+
+      const projected = selected.map((place) => project(place.lat, place.lng, chosenZoom));
+      const minX = Math.min(...projected.map((point) => point.x));
+      const maxX = Math.max(...projected.map((point) => point.x));
+      const minY = Math.min(...projected.map((point) => point.y));
+      const maxY = Math.max(...projected.map((point) => point.y));
+      const center = unproject((minX + maxX) / 2, (minY + maxY) / 2, chosenZoom);
+
+      const previousZoom = mapState.zoom;
+      mapState.centerLat = center.lat;
+      mapState.centerLng = center.lng;
+      mapState.zoom = chosenZoom;
+      switchProviderForZoom(previousZoom, chosenZoom);
+      renderMap();
+    }
+
+    function applyTileProvider(index) {
+      mapState.tileProviderIndex = Math.max(0, Math.min(tileProviders.length - 1, index));
+      const provider = tileProviders[mapState.tileProviderIndex];
+      mapAttribution.href = provider.attributionUrl;
+      mapAttribution.textContent = provider.attribution;
+      mapAttribution.target = "_blank";
+    }
+
+    function switchProviderForZoom(fromZoom, toZoom) {
+      if (fromZoom < 14 && toZoom >= 14 && mapState.tileProviderIndex === 0) {
+        mapShell.classList.remove("tiles-active");
+        applyTileProvider(1);
+      } else if (fromZoom >= 14 && toZoom < 14 && mapState.tileProviderIndex <= 1) {
+        mapShell.classList.remove("tiles-active");
+        applyTileProvider(0);
+      }
+    }
+
+    function noteTileLoaded() {
+      if (!mapShell.classList.contains("tiles-active")) {
+        mapShell.classList.add("tiles-active");
+        mapTitleText.textContent = "拖动或缩放，继续加载更细地图";
+      }
+    }
+
+    function resolveMarkerCollisions(entries, width, height, showLabels) {
+      const isMobile = window.innerWidth <= 760;
+      const minGap = showLabels ? (isMobile ? 76 : 84) : (isMobile ? 52 : 56);
+      const active = entries
+        .filter((entry) => entry.visible && entry.x > -30 && entry.x < width + 30 && entry.y > -30 && entry.y < height + 30)
+        .map((entry) => ({ ...entry }));
+
+      for (let pass = 0; pass < 100; pass += 1) {
+        let moved = false;
+        for (let i = 0; i < active.length; i += 1) {
+          for (let j = i + 1; j < active.length; j += 1) {
+            const a = active[i];
+            const b = active[j];
+            let dx = b.x - a.x;
+            let dy = b.y - a.y;
+            let distance = Math.hypot(dx, dy);
+            if (distance >= minGap) continue;
+            if (distance < .5) {
+              const angle = (i * 2.4 + j * 1.7) % (Math.PI * 2);
+              dx = Math.cos(angle);
+              dy = Math.sin(angle);
+              distance = 1;
+            }
+            const push = (minGap - distance) / 2;
+            const ux = dx / distance;
+            const uy = dy / distance;
+            a.x -= ux * push;
+            a.y -= uy * push;
+            b.x += ux * push;
+            b.y += uy * push;
+            moved = true;
+          }
+        }
+        active.forEach((entry) => {
+          entry.x = Math.max(24, Math.min(width - 24, entry.x));
+          entry.y = Math.max(isMobile ? 66 : 70, Math.min(height - 34, entry.y));
+        });
+        if (!moved) break;
+      }
+      return active;
+    }
+
+    function renderMap() {
+      const rect = mapViewport.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.round(mapState.zoom)));
+      mapState.zoom = zoom;
+      const center = project(mapState.centerLat, mapState.centerLng, zoom);
+      const originX = center.x - rect.width / 2;
+      const originY = center.y - rect.height / 2;
+      const tileCount = Math.pow(2, zoom);
+      const xStart = Math.floor(originX / TILE_SIZE);
+      const xEnd = Math.floor((originX + rect.width) / TILE_SIZE);
+      const yStart = Math.max(0, Math.floor(originY / TILE_SIZE));
+      const yEnd = Math.min(tileCount - 1, Math.floor((originY + rect.height) / TILE_SIZE));
+      const centerTileX = Math.floor(center.x / TILE_SIZE);
+      const centerTileY = Math.floor(center.y / TILE_SIZE);
+      const fragment = document.createDocumentFragment();
+      let tileErrors = 0;
+      const provider = tileProviders[mapState.tileProviderIndex];
+
+      for (let tileY = yStart; tileY <= yEnd; tileY += 1) {
+        for (let tileX = xStart; tileX <= xEnd; tileX += 1) {
+          const wrappedX = ((tileX % tileCount) + tileCount) % tileCount;
+          const key = `${provider.id}/${zoom}/${wrappedX}/${tileY}`;
+          const image = document.createElement("img");
+          image.alt = "";
+          image.draggable = false;
+          image.decoding = "async";
+          image.loading = "eager";
+          image.fetchPriority = Math.abs(tileX - centerTileX) <= 1 && Math.abs(tileY - centerTileY) <= 1 ? "high" : "low";
+          image.referrerPolicy = "strict-origin-when-cross-origin";
+          image.style.left = `${tileX * TILE_SIZE - originX}px`;
+          image.style.top = `${tileY * TILE_SIZE - originY}px`;
+          if (tileCache.has(key)) image.classList.add("is-loaded");
+          image.addEventListener("load", () => {
+            tileCache.add(key);
+            image.classList.add("is-loaded");
+            noteTileLoaded();
+          }, { once: true });
+          image.addEventListener("error", () => {
+            tileErrors += 1;
+            image.classList.add("is-error");
+            if (!providerSwitchLock && tileErrors >= 3 && mapState.tileProviderIndex < tileProviders.length - 1) {
+              providerSwitchLock = true;
+              mapShell.classList.remove("tiles-active");
+              applyTileProvider(mapState.tileProviderIndex + 1);
+              setTimeout(() => {
+                providerSwitchLock = false;
+                renderMap();
+              }, 0);
+            } else if (!mapShell.classList.contains("tiles-active") && tileErrors >= 3 && mapState.tileProviderIndex === tileProviders.length - 1) {
+              mapTitleText.textContent = "地图服务不可用 · 当前显示离线示意地图";
+            }
+          }, { once: true });
+          image.src = provider.url(zoom, wrappedX, tileY);
+          fragment.appendChild(image);
+        }
+      }
+      tileLayer.replaceChildren(fragment);
+
+      const showMarkerLabels = zoom >= 14 || activeDay !== "all";
+      const markerEntries = places.filter((place) => !place.scheduleOnly).map((place) => {
+        const point = project(place.lat, place.lng, zoom);
+        return {
+          id: place.id,
+          rawX: point.x - originX,
+          rawY: point.y - originY,
+          x: point.x - originX,
+          y: point.y - originY,
+          visible: activeDay === "all" || String(place.day) === activeDay || place.id === "voco"
+        };
+      });
+      const resolvedMarkers = resolveMarkerCollisions(markerEntries, rect.width, rect.height, showMarkerLabels);
+      const resolvedById = new Map(resolvedMarkers.map((entry) => [entry.id, entry]));
+      markersLayer.classList.toggle("labels-hidden", !showMarkerLabels);
+
+      routeOverlay.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
+      const routeMarkup = [1, 2, 3].map((day) => {
+        const routePoints = places
+          .filter((place) => place.day === day && !place.mapOnly && !place.scheduleOnly)
+          .sort((a, b) => timeRank(a.time) - timeRank(b.time))
+          .map((place) => {
+            const point = project(place.lat, place.lng, zoom);
+            return { x: point.x - originX, y: point.y - originY };
+          });
+        if (routePoints.length < 2) return "";
+        const path = routePoints.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
+        const muted = activeDay !== "all" && String(day) !== activeDay;
+        return `<path class="route-line day-${day} ${muted ? "is-muted" : ""}" d="${path}"/>`;
+      }).join("");
+      const stemMarkup = resolvedMarkers
+        .filter((entry) => Math.hypot(entry.x - entry.rawX, entry.y - entry.rawY) > 5)
+        .map((entry) => `<line class="marker-stem" x1="${entry.rawX.toFixed(1)}" y1="${entry.rawY.toFixed(1)}" x2="${entry.x.toFixed(1)}" y2="${entry.y.toFixed(1)}"/>`)
+        .join("");
+      routeOverlay.innerHTML = routeMarkup + stemMarkup;
+
+      markersLayer.querySelectorAll(".map-marker").forEach((marker) => {
+        const entry = resolvedById.get(marker.dataset.placeId) || markerEntries.find((item) => item.id === marker.dataset.placeId);
+        if (!entry) return;
+        marker.style.left = `${entry.x}px`;
+        marker.style.top = `${entry.y}px`;
+        marker.classList.toggle("is-muted", !entry.visible);
+      });
+
+      zoomLevel.textContent = `Z${zoom}`;
+      document.getElementById("zoomIn").disabled = zoom >= MAX_ZOOM;
+      document.getElementById("zoomOut").disabled = zoom <= MIN_ZOOM;
+      mapTitleText.textContent = zoom >= MAX_ZOOM
+        ? "已到最大缩放 · 当前为可靠街区地图"
+        : zoom >= 14
+          ? "街区细节已加载 · 点击点位查看行程"
+          : "拖动或缩放，继续加载更细地图";
+      mapStage.style.transform = "translate(0px, 0px)";
+      mapState.initialized = true;
+    }
+
+    function selectDay(day) {
+      activeDay = String(day);
+      document.querySelectorAll(".day-tab").forEach((button) => {
+        button.setAttribute("aria-pressed", button.dataset.day === activeDay ? "true" : "false");
+      });
+      document.querySelectorAll("[data-day-group]").forEach((group) => {
+        group.hidden = activeDay !== "all" && group.dataset.dayGroup !== activeDay;
+      });
+      closeDetail();
+      fitMapToPlaces(activeDay);
+      if (window.innerWidth <= 760) {
+        const top = mapShell.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+      }
+    }
+
+    function placeById(id) {
+      return places.find((place) => place.id === id);
+    }
+
+    function openPlace(id, shouldZoom = true) {
+      const place = placeById(id);
+      if (!place) return;
+      activePlaceId = id;
+      document.querySelectorAll(".map-marker").forEach((marker) => {
+        marker.setAttribute("aria-pressed", marker.dataset.placeId === id ? "true" : "false");
+      });
+      document.querySelectorAll(".timeline-button").forEach((button) => {
+        button.classList.toggle("is-selected", button.dataset.placeId === id);
+      });
+
+      detailContent.innerHTML = `
+        <div class="detail-head">
+          <button class="detail-close" type="button" aria-label="关闭地点详情" id="closeDetail"><svg aria-hidden="true"><use href="#i-close"></use></svg></button>
+          <div class="detail-kicker">${place.date} · ${place.time} · ${place.typeLabel}</div>
+          <h2 class="detail-title">${place.name}</h2>
+          <p class="detail-subtitle">${place.subtitle}</p>
+        </div>
+        ${place.image ? `
+          <figure class="detail-visual">
+            <img src="${place.image}" alt="${place.name}" loading="eager" decoding="async" referrerpolicy="no-referrer">
+          </figure>
+        ` : ""}
+        <div class="detail-body">
+          <p class="detail-description">${place.description}</p>
+          <div class="detail-meta">
+            <div class="meta-row"><span class="meta-label">建议停留</span><span class="meta-value">${place.duration}</span></div>
+            <div class="meta-row"><span class="meta-label">地址</span><span class="meta-value">${place.address}</span></div>
+          </div>
+          <p class="detail-tip">${place.tip}</p>
+          <div class="detail-actions">
+            ${place.links.map((link, index) => `
+              <a class="action-link ${index > 0 ? "secondary" : ""}" href="${link.url}" target="_blank" rel="noopener noreferrer">
+                <svg aria-hidden="true"><use href="#${link.icon}"></use></svg>${link.label}
+              </a>
+            `).join("")}
+          </div>
+        </div>
+      `;
+      detailPanel.classList.add("is-open");
+      detailPanel.scrollTop = 0;
+      document.getElementById("closeDetail").addEventListener("click", closeDetail);
+
+      if (shouldZoom && !place.scheduleOnly) focusOnPlace(place);
+    }
+
+    function closeDetail() {
+      activePlaceId = null;
+      detailPanel.classList.remove("is-open");
+      document.querySelectorAll(".map-marker").forEach((marker) => marker.setAttribute("aria-pressed", "false"));
+      document.querySelectorAll(".timeline-button").forEach((button) => button.classList.remove("is-selected"));
+    }
+
+    function focusOnPlace(place) {
+      const previousZoom = mapState.zoom;
+      mapState.centerLat = place.lat;
+      mapState.centerLng = place.lng;
+      mapState.zoom = Math.max(mapState.zoom, window.innerWidth <= 760 ? 15 : 16);
+      switchProviderForZoom(previousZoom, mapState.zoom);
+      renderMap();
+    }
+
+    function zoomMap(delta, anchorClientX, anchorClientY) {
+      const nextZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, mapState.zoom + delta));
+      if (nextZoom === mapState.zoom) return;
+      const rect = mapViewport.getBoundingClientRect();
+      const oldCenter = project(mapState.centerLat, mapState.centerLng, mapState.zoom);
+      const offsetX = Number.isFinite(anchorClientX) ? anchorClientX - rect.left - rect.width / 2 : 0;
+      const offsetY = Number.isFinite(anchorClientY) ? anchorClientY - rect.top - rect.height / 2 : 0;
+      const factor = Math.pow(2, nextZoom - mapState.zoom);
+      const center = unproject(
+        (oldCenter.x + offsetX) * factor - offsetX,
+        (oldCenter.y + offsetY) * factor - offsetY,
+        nextZoom
+      );
+      mapState.centerLat = center.lat;
+      mapState.centerLng = center.lng;
+      mapState.zoom = nextZoom;
+      switchProviderForZoom(mapState.zoom - delta, nextZoom);
+      renderMap();
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      let label = "";
+      if (now < tripStart) {
+        const days = Math.ceil((tripStart - now) / 86400000);
+        label = `距出发 ${days} 天`;
+      } else if (now <= tripEnd) {
+        label = "旅程进行中";
+      } else {
+        label = "旅行回忆";
+      }
+      document.getElementById("tripCountdown").textContent = label;
+      document.getElementById("headerCountdown").textContent = label;
+    }
+
+    function syncTopbarHeight() {
+      const height = document.querySelector(".topbar").getBoundingClientRect().height;
+      document.documentElement.style.setProperty("--mobile-topbar-height", `${Math.ceil(height)}px`);
+    }
+
+    const topbarResizeObserver = new ResizeObserver(syncTopbarHeight);
+    topbarResizeObserver.observe(document.querySelector(".topbar"));
+
+    function updateSectionNav(targetId) {
+      document.querySelectorAll("[data-section-target]").forEach((link) => {
+        if (link.dataset.sectionTarget === targetId) {
+          link.setAttribute("aria-current", "location");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      });
+    }
+
+    function scrollToBoard(targetId) {
+      const target = document.getElementById(targetId);
+      if (!target) return false;
+
+      updateSectionNav(targetId);
+      if (window.innerWidth <= 760) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        return true;
+      }
+
+      if (targetId === "itineraryBoard") {
+        timelineScroll.scrollTo({ top: 0, behavior: "smooth" });
+        return true;
+      }
+
+      const containerRect = timelineScroll.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const top = timelineScroll.scrollTop + targetRect.top - containerRect.top - 12;
+      timelineScroll.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+      return true;
+    }
+
+    document.querySelectorAll("[data-section-target]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        if (scrollToBoard(link.dataset.sectionTarget)) event.preventDefault();
+      });
+    });
+
+    markersLayer.addEventListener("click", (event) => {
+      const marker = event.target.closest(".map-marker");
+      if (marker) openPlace(marker.dataset.placeId);
+    });
+
+    timelineScroll.addEventListener("click", (event) => {
+      const dayButton = event.target.closest(".day-tab");
+      if (dayButton) {
+        selectDay(dayButton.dataset.day);
+        return;
+      }
+      const filterButton = event.target.closest("[data-shop-filter]");
+      if (filterButton) {
+        applyOutdoorFilter(filterButton.dataset.shopFilter);
+        return;
+      }
+      const button = event.target.closest("[data-place-id]");
+      if (!button) return;
+      if ((button.classList.contains("restaurant-card") || button.classList.contains("xmas-card")) && activeDay !== "all") {
+        selectDay("all");
+      }
+      if (window.innerWidth <= 760 && (button.classList.contains("hair-option-map-button") || button.classList.contains("restaurant-card") || button.classList.contains("xmas-card"))) {
+        const top = mapShell.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+      }
+      openPlace(button.dataset.placeId);
+    });
+
+    document.getElementById("zoomIn").addEventListener("click", () => zoomMap(1));
+    document.getElementById("zoomOut").addEventListener("click", () => zoomMap(-1));
+    document.getElementById("fitMap").addEventListener("click", () => {
+      closeDetail();
+      fitMapToPlaces(activeDay);
+    });
+
+    mapViewport.addEventListener("pointerdown", (event) => {
+      if (event.target.closest(".map-marker") || event.button > 0) return;
+      isDragging = true;
+      dragMoved = false;
+      dragStartX = event.clientX;
+      dragStartY = event.clientY;
+      dragOffsetX = 0;
+      dragOffsetY = 0;
+      mapViewport.classList.add("is-dragging");
+      mapViewport.setPointerCapture(event.pointerId);
+    });
+
+    mapViewport.addEventListener("pointermove", (event) => {
+      if (!isDragging) return;
+      const dx = event.clientX - dragStartX;
+      const dy = event.clientY - dragStartY;
+      if (Math.abs(dx) + Math.abs(dy) > 4) dragMoved = true;
+      dragOffsetX = dx;
+      dragOffsetY = dy;
+      mapStage.style.transform = `translate(${dx}px, ${dy}px)`;
+    });
+
+    function endDrag(event) {
+      if (!isDragging) return;
+      if (dragMoved) {
+        const center = project(mapState.centerLat, mapState.centerLng, mapState.zoom);
+        const nextCenter = unproject(
+          center.x - dragOffsetX,
+          center.y - dragOffsetY,
+          mapState.zoom
+        );
+        mapState.centerLat = nextCenter.lat;
+        mapState.centerLng = nextCenter.lng;
+        renderMap();
+      } else {
+        mapStage.style.transform = "translate(0px, 0px)";
+      }
+      isDragging = false;
+      mapViewport.classList.remove("is-dragging");
+      if (event.pointerId != null && mapViewport.hasPointerCapture(event.pointerId)) {
+        mapViewport.releasePointerCapture(event.pointerId);
+      }
+    }
+    mapViewport.addEventListener("pointerup", endDrag);
+    mapViewport.addEventListener("pointercancel", endDrag);
+
+    mapViewport.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      if (wheelLocked) return;
+      wheelLocked = true;
+      const direction = event.deltaY > 0 ? -1 : 1;
+      zoomMap(direction, event.clientX, event.clientY);
+      setTimeout(() => { wheelLocked = false; }, 180);
+    }, { passive: false });
+
+    mapViewport.addEventListener("touchstart", (event) => {
+      if (event.touches.length !== 2) return;
+      isDragging = false;
+      dragMoved = true;
+      mapViewport.classList.remove("is-dragging");
+      mapStage.style.transform = "translate(0px, 0px)";
+      const [a, b] = event.touches;
+      pinchStartDistance = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+    }, { passive: true });
+
+    mapViewport.addEventListener("touchmove", (event) => {
+      if (event.touches.length !== 2) return;
+      event.preventDefault();
+      const [a, b] = event.touches;
+      const distance = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      const ratio = distance / Math.max(1, pinchStartDistance);
+      if (ratio > 1.38 || ratio < .72) {
+        const midX = (a.clientX + b.clientX) / 2;
+        const midY = (a.clientY + b.clientY) / 2;
+        zoomMap(ratio > 1 ? 1 : -1, midX, midY);
+        pinchStartDistance = distance;
+      }
+    }, { passive: false });
+
+    mapViewport.addEventListener("dblclick", (event) => {
+      if (event.target.closest(".map-marker")) return;
+      zoomMap(1, event.clientX, event.clientY);
+    });
+
+    mapViewport.addEventListener("click", (event) => {
+      if (!dragMoved && !event.target.closest(".map-marker") && activePlaceId) closeDetail();
+      dragMoved = false;
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && activePlaceId) closeDetail();
+    });
+
+    let resizeTimer = 0;
+    window.addEventListener("resize", () => {
+      syncTopbarHeight();
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (mapState.initialized) renderMap();
+      }, 120);
+    });
+
+    renderMarkers();
+    renderTimeline();
+    updateCountdown();
+    syncTopbarHeight();
+    document.fonts?.ready.then(syncTopbarHeight);
+    applyTileProvider(0);
+    requestAnimationFrame(() => {
+      fitMapToPlaces("all");
+    });
+  </script>
+</body>
+</html>
