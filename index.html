@@ -967,18 +967,22 @@
 
     .detail-visual {
       position: relative;
-      aspect-ratio: 16 / 9;
+      max-height: min(56vh, 520px);
       margin: 0;
       overflow: hidden;
+      display: grid;
+      place-items: center;
       background: var(--paper-deep);
       border-bottom: 1px solid rgba(23, 52, 43, .1);
     }
 
     .detail-visual img {
-      width: 100%;
-      height: 100%;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: min(56vh, 520px);
       display: block;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .detail-visual::after {
@@ -2212,7 +2216,7 @@
     const tripEnd = new Date("2026-12-27T23:59:59+09:00");
 
     const dayMeta = {
-      1: { date: "12月24日", weekday: "周四", theme: "抵达 · 剪发 · 江南" },
+      1: { date: "12月24日", weekday: "周四", theme: "抵达 · 剪发 · 汝矣岛圣诞" },
       2: { date: "12月25日", weekday: "周五", theme: "完整钟路日 · 圣诞灯 · Let Me Fly" },
       3: { date: "12月26日", weekday: "周六", theme: "圣水购物 · 下午医美 · 清淡晚餐" }
     };
@@ -2257,7 +2261,7 @@
         address: "서울 강남구 일대 · 理发店待定",
         duration: "约 45 分钟",
         description: "12 月 24 日 16:00 先预留理发时段，具体店铺还没确定。中间留出午餐时间，再从下方五家候选里按位置、风格、价格和英文沟通方式确定。",
-        tip: "先确定最想去的店，再按对应网站预约。剪发控制在 1–1.5 小时，之后直接去汝矣岛韩美屋晚餐。",
+        tip: "先确定最想去的店，再按对应网站预约。剪发控制在 1–1.5 小时，之后先去 The Hyundai 6 层服务台取号/排队，再去韩美屋晚餐。",
         links: []
       },
       {
@@ -2670,22 +2674,22 @@
       },
       {
         id: "coex-library",
-        day: 1,
-        time: "20:45",
+        day: 3,
+        time: "20:15",
         type: "event",
         icon: "i-book-open",
         image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=82",
         typeLabel: "圣诞夜",
         name: "COEX 星光图书馆",
         shortName: "COEX 星光图书馆",
-        subtitle: "圣诞灯饰 + 书墙，圣诞夜室内收尾",
-        date: "12/24",
+        subtitle: "医美日室内收尾 · 书墙与圣诞灯饰",
+        date: "12/26",
         address: "서울 강남구 영동대로 513 · 별마당도서관",
         lat: 37.5115,
         lng: 127.0592,
         duration: "约 40–50 分钟",
-        description: "从汝矣岛韩美屋晚餐后去 COEX，高大的书墙在夜里像一条发光的峡谷，圣诞灯饰藏在书脊和人群之间。它离江南酒店近，适合作为圣诞夜最后一站。",
-        tip: "19:45 左右从韩美屋出发，预留 40 分钟到 COEX。先确认图书馆圣诞季营业时间；如果晚餐拖得太晚，就直接回酒店。",
+        description: "圣水清淡晚餐后去 COEX。高大的书墙在夜里像一条发光的峡谷，圣诞灯饰藏在书脊和人群之间；室内停留也更适合医美后的状态，结束后回江南酒店很近。",
+        tip: "19:45 左右从圣水出发，20:15 到星光图书馆，停留约 40–50 分钟。先确认图书馆圣诞季营业时间；如果医美后状态疲惫，就跳过直接回酒店。",
         links: [
           { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%B3%84%EB%A7%88%EB%8B%B9%20%EB%8F%84%EC%84%9C%EA%B4%80", icon: "i-pin" },
           { label: "Starfield COEX", url: "https://www.starfield.co.kr/coex/", icon: "i-external" }
@@ -2718,21 +2722,21 @@
         id: "hanmiok-yeouido",
         day: 1,
         optional: true,
-        time: "18:15",
+        time: "17:55",
         type: "food",
         icon: "i-utensils",
         image: "https://i.autoreserve.com/thumb/1200x1200/restaurant_image/image/065/559/531/65559531/1f3da5e9-ca3f-4474-852b-c0f20b858fd9.jpeg?format=webp",
         typeLabel: "韩牛烤肉",
         name: "한미옥 여의도직영점 · 韩美屋",
         shortName: "韩美屋韩牛烤肉",
-        subtitle: "12/24 18:15 · 剪发后去汝矣岛吃韩牛",
+        subtitle: "12/24 17:55 · 现代百货排号后去吃韩牛",
         date: "12/24",
         address: "서울 영등포구 여의나루로 81 · 한마루빌딩 1층 5호",
         lat: 37.5242364,
         lng: 126.9276927,
-        duration: "约 1.5 小时",
-        description: "剪发结束后去汝矣岛。薄切牛胸肉、蔬菜和小菜铺在传统铁锅盖上，店员会在桌边现烤，锅边的鸡蛋煎出焦香；吃完直接去 COEX 看星光图书馆。",
-        tip: "18:15 到店，19:40 前结束，19:45 出发去 COEX。圣诞夜容易满位，务必提前用 CatchTable 或 AutoReserve 预约，并备注需要在 19:40 前离店。",
+        duration: "约 1 小时",
+        description: "剪发结束后先去 The Hyundai Seoul 6 层服务台排队，再去汝矣岛吃韩牛。薄切牛胸肉、蔬菜和小菜铺在传统铁锅盖上，店员会在桌边现烤，锅边的鸡蛋煎出焦香；吃完步行回现代百货看圣诞布置。",
+        tip: "17:55 到店，18:45 前结束，18:50 回 The Hyundai。外国游客去 6F 服务台时需持护照；若排队必须现场等候，就相应缩短晚餐或改到饭后补逛。",
         links: [
           { label: "Naver 地图", url: "https://map.naver.com/p/entry/place/1297386601?lng=126.9276927&lat=37.5242364&placePath=%2Fhome&entry=plt&searchType=place", icon: "i-pin" },
           { label: "官方网站", url: "https://hanmiok-yeouido.com/zh-cn", icon: "i-external" },
@@ -2768,7 +2772,8 @@
       1: [
         { time: "12:25", title: "CZ317 北京大兴 → 金浦", note: "09:30 起飞 · 12:25 抵达 · 入境后直接去酒店", tag: "航班" },
         { time: "14:20", title: "午餐 · 餐厅待定", note: "酒店附近用餐 · 15:35 前结束，再出发去理发", tag: "用餐" },
-        { time: "19:45", title: "韩美屋 → COEX", note: "预留约 40 分钟 · 20:45 到星光图书馆", tag: "转场" }
+        { time: "17:30", title: "The Hyundai 6F 服务台", note: "外国游客持护照取号/排队 · 视叫号时间去韩美屋", tag: "排队" },
+        { time: "18:50", title: "韩美屋 → The Hyundai", note: "步行约 5–10 分钟 · 18:55 前进馆", tag: "转场" }
       ],
       2: [
         { time: "16:25", title: "钟路简餐", note: "剧场附近快速晚餐 · 16:55 前结束，不再加购物点", tag: "用餐" },
@@ -2776,7 +2781,8 @@
       ],
       3: [
         { time: "14:15", title: "前往 Banobagi", note: "从圣水出发 · 15:00 前到彦州站", tag: "转场" },
-        { time: "18:45", title: "晚餐 · 圣水清淡软食", note: "从 Banobagi 回圣水 · 不饮酒、不辛辣、不吃过烫和难咀嚼食物", tag: "术后用餐" }
+        { time: "18:45", title: "晚餐 · 圣水清淡软食", note: "从 Banobagi 回圣水 · 不饮酒、不辛辣、不吃过烫和难咀嚼食物", tag: "术后用餐" },
+        { time: "19:45", title: "圣水 → COEX", note: "晚餐后去星光图书馆 · 20:15 前到", tag: "转场" }
       ]
     };
 
@@ -3214,7 +3220,7 @@
       {
         placeId: "coex-library",
         image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=82",
-        status: "已排入 12/24",
+        status: "已排入 12/26",
         area: "三成",
         title: "COEX 星光图书馆",
         note: "11 月中旬起换上圣诞布置；巨型圣诞树配整面书墙，室内拍照不怕冷。"
@@ -3261,11 +3267,11 @@
       },
       {
         placeId: "hyundai-seoul",
-        image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=82",
-        status: "室内备选",
+        image: "https://kdquriyjcgprmukhlqst.supabase.co/storage/v1/object/public/issue-diaries/219e445e-fd0c-4442-bcb6-f8495f43f210/3a203a7d-7a55-491c-8bef-a2b8a8252b83.jpg",
+        status: "已排入 12/24",
         area: "汝矣岛",
-        title: "The Hyundai Seoul 圣诞村",
-        note: "整层圣诞布置、逛吃一体；适合和汝矣岛水芹菜汤饭、汉江泡面组合。"
+        title: "The Hyundai Christmas in NYC",
+        note: "80 年代约克维尔街区复刻：褐砂石小楼、复古报刊亭、霓虹灯牌与黄色出租车；小猫的故事藏在每个角落。外国游客记得持护照先去 6F 服务台排队。"
       },
       {
         placeId: "namsan-tower",
@@ -3328,25 +3334,25 @@
       },
       {
         id: "hyundai-seoul",
-        day: 0,
-        mapOnly: true,
-        time: "室内备选",
+        day: 1,
+        time: "18:55",
         type: "event",
         icon: "i-christmas",
-        image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=82",
-        typeLabel: "室内圣诞",
-        name: "The Hyundai Seoul 圣诞村",
+        image: "https://kdquriyjcgprmukhlqst.supabase.co/storage/v1/object/public/issue-diaries/219e445e-fd0c-4442-bcb6-f8495f43f210/3a203a7d-7a55-491c-8bef-a2b8a8252b83.jpg",
+        typeLabel: "圣诞活动",
+        name: "The Hyundai Seoul · Christmas in New York City",
         shortName: "The Hyundai",
-        subtitle: "汝矣岛室内圣诞装置与逛吃",
-        date: "圣诞备选",
+        subtitle: "一步闯进80年代纽约圣诞片场，小猫故事藏在每个角落",
+        date: "12/24",
         address: "서울 영등포구 여의대로 108 · 더현대 서울",
         lat: 37.5258,
         lng: 126.9281,
-        duration: "约 1–2 小时",
-        description: "整座商场会换上冬季与圣诞装置，适合天气太冷、下雨或想逛街时切到室内。可以和汝矣岛汉江泡面安排在同一条线上。",
-        tip: "节假日人多，先看官方账号确认当年的装置楼层与开放时间；用餐高峰建议避开 12:00–13:00 和 18:00–19:00。",
+        duration: "约 1 小时",
+        description: "灵感来自 80 年代纽约约克维尔街区：红砖褐砂石联排小楼、复古报刊亭、霓虹灯牌和标志性黄色出租车一并复刻。圣诞老人与流浪猫的故事藏在每个角落，等待你在橱窗、报刊亭和霓虹灯牌之间发现。走在其中，像一步闯进一部美式圣诞电影，松弛又浪漫，随手一拍都有复古胶片感。",
+        tip: "外国游客需持护照到 6 层服务台排队。建议 17:30 先取号/排队；若可留号，再去韩美屋吃饭后回来，必须现场等待则按叫号时间取舍。主布置和集章无需预约，但个别快闪店可能有独立排队。12/24 周四营业到 20:00。",
         links: [
-          { label: "The Hyundai", url: "https://www.thehyundai.com/", icon: "i-external" },
+          { label: "官方圣诞活动", url: "https://thehyundaiseoul.ehyundai.com/issue-diary/219e445e-fd0c-4442-bcb6-f8495f43f210", icon: "i-external" },
+          { label: "圣诞集章规则", url: "https://www.ehyundai.com/newPortal/SN/SN_0201000.do?evntCrdCd=E1102611514722", icon: "i-external" },
           { label: "Naver 地图", url: "https://map.naver.com/p/search/%EB%8D%94%ED%98%84%EB%8C%80%20%EC%84%9C%EC%9A%B8", icon: "i-pin" }
         ]
       },
@@ -3774,7 +3780,7 @@
         </div>
         <footer class="trip-footer">
           <h2>这版的节奏</h2>
-          <p>24 日理发送达，25 日留给完整钟路和 18:00《Let Me Fly》，26 日上午在圣水购物、下午去 Banobagi。医美后只回圣水吃清淡晚餐，不再加夜间打卡。</p>
+          <p>24 日剪发后去汝矣岛吃韩美屋、看 The Hyundai 纽约圣诞；25 日留给完整钟路和 18:00《Let Me Fly》；26 日上午在圣水购物、下午去 Banobagi，晚餐后用室内 COEX 收尾。</p>
         </footer>
       `;
     }
