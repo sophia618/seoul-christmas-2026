@@ -1856,6 +1856,29 @@
       white-space: nowrap;
     }
 
+    .wilson-check-item.oy-with-image {
+      grid-template-columns: 24px 52px minmax(0, 1fr) auto;
+      align-items: center;
+    }
+
+    .oy-target-media {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid rgba(23, 52, 43, .1);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .oy-target-media img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
     .oy-store-card {
       display: flex;
       align-items: center;
@@ -3358,6 +3381,33 @@
         meta: "染烫 / 干发 · 旅行装优先",
         note: "体积较大时优先拿旅行装，避免托运和行李重量失控。",
         category: "护发"
+      },
+      {
+        id: "wdressroom-hand",
+        badge: "护手霜",
+        name: "W.DRESSROOM 香氛护手霜",
+        meta: "10 周年企划 · 多香型可选",
+        note: "热门香型先闻再买；包装相似，认准 Perfume Hand Cream。",
+        category: "香氛",
+        image: "https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0100/A00000100231101ko.jpg?l=ko"
+      },
+      {
+        id: "ongredients-primer",
+        badge: "妆前",
+        name: "ONGREDIENTS 专业妆前乳",
+        meta: "平滑 / 保湿妆前 · 按包装找",
+        note: "可给店员看图片找 Professional Makeup Primer，先试质地再决定。",
+        category: "妆前",
+        image: "https://down-sg.img.susercontent.com/file/cn-11134207-820l4-mj3ngvpb2znrc3"
+      },
+      {
+        id: "lindsay-cup-pack",
+        badge: "软膜",
+        name: "LINDSAY 杯状软膜",
+        meta: "单次杯装 · 7 种功效",
+        note: "第一次优先买单杯，胶原、茶树或维生素按诉求选，不必先囤大袋。",
+        category: "面膜",
+        image: "https://byuppo.com/wp-content/uploads/2026/08/lindsay-cup-pack-starter-3types.jpg"
       }
     ];
 
@@ -3734,8 +3784,13 @@
       `).join("");
 
       const oliveYoungTargetsMarkup = oliveYoungTargets.map((target) => `
-        <li class="wilson-check-item">
+        <li class="wilson-check-item ${target.image ? "oy-with-image" : ""}">
           <input class="wilson-check-input" id="olive-young-check-${target.id}" type="checkbox" aria-label="勾选${target.name}">
+          ${target.image ? `
+            <span class="oy-target-media">
+              <img src="${target.image}" alt="${target.name}" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+            </span>
+          ` : ""}
           <label class="wilson-check-copy" for="olive-young-check-${target.id}">
             <strong>${target.badge} · ${target.name}</strong>
             <small>${target.meta}</small>
@@ -3920,7 +3975,7 @@
         <section class="wilson-board" id="oliveYoungBoard" aria-labelledby="oliveYoungBoardTitle">
           <div class="restaurant-board-head">
             <h3 id="oliveYoungBoardTitle">Olive Young 采购清单</h3>
-            <span>K-beauty 8 Picks</span>
+            <span>K-beauty 11 Picks</span>
           </div>
           <p class="restaurant-board-note">12/27 09:00 狎鸥亭中央店开门即逛。先拿清单目标，再看 1+1、企划装和退税；09:55 前结账。</p>
           <ul class="wilson-checklist">${oliveYoungTargetsMarkup}</ul>
