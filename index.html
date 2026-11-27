@@ -298,7 +298,7 @@
 
     .day-tabs {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 5px;
       padding: 4px;
       border: 1px solid rgba(23, 52, 43, .15);
@@ -727,6 +727,7 @@
     .route-line.day-1 { stroke: var(--orange); }
     .route-line.day-2 { stroke: var(--green); }
     .route-line.day-3 { stroke: var(--blue); }
+    .route-line.day-4 { stroke: var(--gold); }
     .route-line.is-muted { opacity: .08; }
 
     .marker-stem {
@@ -1844,6 +1845,54 @@
 
     .wilson-store-head { margin-top: 2px; }
 
+    .oy-check-tag {
+      padding: 4px 7px;
+      border-radius: 999px;
+      color: var(--green);
+      background: var(--green-pale);
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 820;
+      white-space: nowrap;
+    }
+
+    .oy-store-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid rgba(23, 52, 43, .13);
+      border-radius: 9px;
+      background: rgba(255,255,255,.62);
+    }
+
+    .oy-store-card strong,
+    .oy-store-card small { display: block; }
+    .oy-store-card strong { font-size: 12px; line-height: 1.35; }
+    .oy-store-card small {
+      margin-top: 3px;
+      color: var(--ink-soft);
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    .oy-store-card a {
+      flex: 0 0 auto;
+      padding: 7px 9px;
+      border: 1px solid rgba(23,52,43,.2);
+      border-radius: 7px;
+      color: var(--ink);
+      font-size: 9px;
+      font-weight: 780;
+      text-decoration: none;
+    }
+
+    .oy-store-card a:hover {
+      color: var(--paper);
+      background: var(--ink);
+    }
+
     .mobile-daybar { display: none; }
 
     @media (max-width: 980px) {
@@ -2071,7 +2120,7 @@
           <svg aria-hidden="true"><use href="#i-calendar"></use></svg>
           <span>行程</span>
         </a>
-        <a class="section-nav-link" href="#wilsonBoard" data-section-target="wilsonBoard">
+        <a class="section-nav-link" href="#shoppingBoard" data-section-target="shoppingBoard">
           <svg aria-hidden="true"><use href="#i-shopping"></use></svg>
           <span>购物清单</span>
         </a>
@@ -2218,7 +2267,8 @@
     const dayMeta = {
       1: { date: "12月24日", weekday: "周四", theme: "抵达 · 剪发 · 汝矣岛圣诞" },
       2: { date: "12月25日", weekday: "周五", theme: "完整钟路日 · 圣诞灯 · Let Me Fly" },
-      3: { date: "12月26日", weekday: "周六", theme: "圣水购物 · 下午医美 · 清淡晚餐" }
+      3: { date: "12月26日", weekday: "周六", theme: "圣水购物 · 下午医美 · 清淡晚餐" },
+      4: { date: "12月27日", weekday: "周日", theme: "Olive Young · 金浦回程" }
     };
 
     const places = [
@@ -2765,6 +2815,28 @@
           { label: "Naver 地图", url: "https://map.naver.com/p/search/CU%20%EC%84%9C%EC%9A%B8%ED%95%AD%EC%A0%90", icon: "i-pin" },
           { label: "汉江公园信息", url: "https://english.visitseoul.net/", icon: "i-external" }
         ]
+      },
+      {
+        id: "olive-young",
+        day: 4,
+        time: "09:00",
+        type: "shop",
+        icon: "i-shopping",
+        typeLabel: "K-beauty 采购",
+        name: "Olive Young 狎鸥亭中央店",
+        shortName: "Olive Young",
+        subtitle: "09:00 开门即逛 · 10:00 前回酒店",
+        date: "12/27",
+        address: "서울 강남구 논현로 842",
+        lat: 37.5241356,
+        lng: 127.0286407,
+        duration: "约 55 分钟",
+        description: "离 voco 约 600 米，09:00 一开门就进场，用 55 分钟集中买护肤、防晒、彩妆和护发。10:00 前结账回酒店，给退房和去金浦留足时间。",
+        tip: "带护照办理退税；先拿购物清单上的目标，再看 1+1 和企划装，避免在货架间耗太久。09:55 前结账，10:05 左右回酒店。",
+        links: [
+          { label: "Naver 地图", url: "https://map.naver.com/p/search/%EC%98%AC%EB%A6%AC%EB%B8%8C%EC%98%81%20%EC%95%95%EA%B5%AC%EC%A0%95%EC%A4%91%EC%95%99%EC%A0%90", icon: "i-pin" },
+          { label: "官方门店", url: "https://www.oliveyoung.co.kr/store/store/store-detail.do?strNm=%EC%95%95%EA%B5%AC%EC%A0%95%EC%A4%91%EC%95%99%EC%A0%90&searchType=strNm", icon: "i-external" }
+        ]
       }
     ];
 
@@ -2783,6 +2855,12 @@
         { time: "14:15", title: "前往 Banobagi", note: "从圣水出发 · 15:00 前到彦州站", tag: "转场" },
         { time: "18:45", title: "晚餐 · 圣水清淡软食", note: "从 Banobagi 回圣水 · 不饮酒、不辛辣、不吃过烫和难咀嚼食物", tag: "术后用餐" },
         { time: "19:45", title: "圣水 → COEX", note: "晚餐后去星光图书馆 · 20:15 前到", tag: "转场" }
+      ],
+      4: [
+        { time: "10:00", title: "回酒店 · 退房", note: "整理战利品和行李 · 确认护照与退税单", tag: "退房" },
+        { time: "10:30", title: "出发去金浦机场", note: "预留约 45–50 分钟 · 11:20 前到", tag: "转场" },
+        { time: "11:20", title: "金浦机场值机", note: "办理托运、安检和退税", tag: "机场" },
+        { time: "13:30", title: "CZ318 金浦 → 北京大兴", note: "预计 15:00 抵达", tag: "航班" }
       ]
     };
 
@@ -3216,6 +3294,73 @@
       }
     ];
 
+    const oliveYoungTargets = [
+      {
+        id: "torriden-serum",
+        badge: "补水",
+        name: "Torriden Dive-In 低分子精华",
+        meta: "干冷天气友好 · 质地清爽",
+        note: "先看小瓶装或套装，适合作为这趟最稳妥的补货项。",
+        category: "护肤"
+      },
+      {
+        id: "roundlab-toner",
+        badge: "爽肤水",
+        name: "Round Lab 1025 独岛爽肤水",
+        meta: "温和补水 · 大瓶更划算",
+        note: "适合湿敷或日常拍脸；先比较单瓶和企划装价格。",
+        category: "护肤"
+      },
+      {
+        id: "mediheal-pads",
+        badge: "棉片",
+        name: "Mediheal 积雪草舒缓棉片",
+        meta: "局部湿敷 · 旅行方便",
+        note: "干冷风吹一天后很适合舒缓；注意容量和密封性。",
+        category: "护理"
+      },
+      {
+        id: "drg-cream",
+        badge: "面霜",
+        name: "Dr.G Red Blemish 舒缓面霜",
+        meta: "敏感肌备选 · 冬季保湿",
+        note: "现场先试质地，确认不会和手上现有护肤步骤重复。",
+        category: "护肤"
+      },
+      {
+        id: "boj-sun",
+        badge: "防晒",
+        name: "Beauty of Joseon 大米防晒",
+        meta: "SPF50+ PA++++ · 通勤体感",
+        note: "热门款容易断货，看到单支或双支装可优先拿。",
+        category: "防晒"
+      },
+      {
+        id: "anua-oil",
+        badge: "卸妆",
+        name: "Anua 鱼腥草洁面油",
+        meta: "卸妆 · 乳化速度",
+        note: "如果平时浓妆或高倍防晒，可作为晚间清洁补货。",
+        category: "清洁"
+      },
+      {
+        id: "romand-tint",
+        badge: "彩妆",
+        name: "rom&nd 果汁唇釉",
+        meta: "日常显色 · 先试热门色",
+        note: "货架色号很多，先在手上试冷暖调，再决定是否买套装。",
+        category: "彩妆"
+      },
+      {
+        id: "unove-treatment",
+        badge: "护发",
+        name: "Unove 深层修护发膜",
+        meta: "染烫 / 干发 · 旅行装优先",
+        note: "体积较大时优先拿旅行装，避免托运和行李重量失控。",
+        category: "护发"
+      }
+    ];
+
     const xmasSpots = [
       {
         placeId: "coex-library",
@@ -3588,6 +3733,18 @@
         </li>
       `).join("");
 
+      const oliveYoungTargetsMarkup = oliveYoungTargets.map((target) => `
+        <li class="wilson-check-item">
+          <input class="wilson-check-input" id="olive-young-check-${target.id}" type="checkbox" aria-label="勾选${target.name}">
+          <label class="wilson-check-copy" for="olive-young-check-${target.id}">
+            <strong>${target.badge} · ${target.name}</strong>
+            <small>${target.meta}</small>
+            <p>${target.note}</p>
+          </label>
+          <span class="oy-check-tag">${target.category}</span>
+        </li>
+      `).join("");
+
       const wilsonStoresMarkup = wilsonStores.map((store) => `
         <article class="hair-option wilson-store-option">
           <button class="hair-option-map-button" type="button" data-place-id="${store.id}">
@@ -3612,7 +3769,7 @@
         </article>
       `).join("");
 
-      const groups = [1, 2, 3].map((day) => {
+      const groups = [1, 2, 3, 4].map((day) => {
         const dayPlaces = places.filter((place) => place.day === day && !place.mapOnly);
         const extras = dayExtras[day] || [];
         const entries = [
@@ -3733,7 +3890,7 @@
       timelineScroll.innerHTML = `
         <section class="sidebar-head section-target" id="itineraryBoard" aria-labelledby="itineraryBoardTitle">
           <div class="section-kicker">
-            <h2 class="section-title" id="itineraryBoardTitle">三日行程</h2>
+            <h2 class="section-title" id="itineraryBoardTitle">四日行程</h2>
             <span class="countdown" id="tripCountdown">—</span>
           </div>
           <div class="day-tabs" aria-label="按日期筛选地图">
@@ -3741,10 +3898,12 @@
             <button class="day-tab" type="button" data-day="1" aria-pressed="false">24<small>周四</small></button>
             <button class="day-tab" type="button" data-day="2" aria-pressed="false">25<small>周五</small></button>
             <button class="day-tab" type="button" data-day="3" aria-pressed="false">26<small>周六</small></button>
+            <button class="day-tab" type="button" data-day="4" aria-pressed="false">27<small>周日</small></button>
           </div>
         </section>
         ${groups}
-        <section class="wilson-board section-target" id="wilsonBoard" aria-labelledby="wilsonBoardTitle">
+        <div class="section-target" id="shoppingBoard">
+        <section class="wilson-board" id="wilsonBoard" aria-labelledby="wilsonBoardTitle">
           <div class="restaurant-board-head">
             <h3 id="wilsonBoardTitle">网球装备采购｜Wilson</h3>
             <span>Wishlist 2</span>
@@ -3758,6 +3917,22 @@
           <p class="hair-board-note">按时间顺序：VITRO 比标准拍与穿线 → Wilson 明洞查限定与定制 → 江南新世界只在缺货时补查。</p>
           <div class="hair-option-list">${wilsonStoresMarkup}</div>
         </section>
+        <section class="wilson-board" id="oliveYoungBoard" aria-labelledby="oliveYoungBoardTitle">
+          <div class="restaurant-board-head">
+            <h3 id="oliveYoungBoardTitle">Olive Young 采购清单</h3>
+            <span>K-beauty 8 Picks</span>
+          </div>
+          <p class="restaurant-board-note">12/27 09:00 狎鸥亭中央店开门即逛。先拿清单目标，再看 1+1、企划装和退税；09:55 前结账。</p>
+          <ul class="wilson-checklist">${oliveYoungTargetsMarkup}</ul>
+          <div class="oy-store-card">
+            <span>
+              <strong>Olive Young 狎鸥亭中央店</strong>
+              <small>09:00–22:30 · 离酒店约 600 米 · 支持退税</small>
+            </span>
+            <a href="https://map.naver.com/p/search/%EC%98%AC%EB%A6%AC%EB%B8%8C%EC%98%81%20%EC%95%95%EA%B5%AC%EC%A0%95%EC%A4%91%EC%95%99%EC%A0%90" target="_blank" rel="noopener noreferrer">地图</a>
+          </div>
+        </section>
+        </div>
         <section class="xmas-board section-target" id="xmasBoard" aria-labelledby="xmasBoardTitle">
           <div class="xmas-board-head">
             <h3 id="xmasBoardTitle">圣诞限定｜8 个打卡点</h3>
@@ -3776,7 +3951,7 @@
         </section>
         <div class="summary-note" style="padding:16px 8px 0">
           <strong>12/27 · CZ318 金浦 → 北京大兴</strong><br>
-          13:30 起飞 · 15:00 抵达。建议 11:15 前从江南酒店出发，当天不再加购物点。
+          09:00 Olive Young → 10:30 前出发去金浦 → 11:20 机场值机 → 13:30 起飞 · 15:00 抵达。
         </div>
         <footer class="trip-footer">
           <h2>这版的节奏</h2>
@@ -4026,7 +4201,7 @@
       markersLayer.classList.toggle("labels-hidden", !showMarkerLabels);
 
       routeOverlay.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
-      const routeMarkup = [1, 2, 3].map((day) => {
+      const routeMarkup = [1, 2, 3, 4].map((day) => {
         const routePoints = places
           .filter((place) => place.day === day && !place.mapOnly && !place.scheduleOnly)
           .sort((a, b) => timeRank(a.time) - timeRank(b.time))
